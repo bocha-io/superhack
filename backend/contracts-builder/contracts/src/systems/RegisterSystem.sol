@@ -25,8 +25,8 @@ contract RegisterSystem is System {
 
         // Init the inventary
         InventoryFirstMon.set(senderKey, MonType.Hanchon);
-        InventorySecondMon.set(senderKey, MonType.Hanchon);
-        InventoryThirdMon.set(senderKey, MonType.Hanchon);
+        InventorySecondMon.set(senderKey, MonType.Renzok);
+        InventoryThirdMon.set(senderKey, MonType.Ramon);
 
         // Set initial position
         Position.set(senderKey, 0, 0);
