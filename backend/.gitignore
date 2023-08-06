@@ -1,0 +1,8 @@
+.DS_Store
+build
+*.log
+users.sql
+internal/backend/IWorld.abi.json
+contracts-builder/client*
+contracts-builder/contracts/worlds.json
+contracts-builder/contracts/types/
