@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/bocha-io/game-backend/x/messages"
+	"github.com/bocha-io/garnet/x/indexer/data"
 	"github.com/bocha-io/superhack/internal/garnethelpers"
 )
 
@@ -63,12 +64,16 @@ func (b *Backend) moveMessage(ws *messages.WebSocketContainer, p []byte) (MoveMe
 	prediction := garnethelpers.NewPrediction(b.db)
 	prediction.Move(int64(moveMsg.X), int64(moveMsg.Y), ws.WalletAddress)
 
-	// TODO: autogenerate predictions and call it here!
-	_, err = b.txBuilder.InteractWithContract(ws.WalletID, "Move", moveMsg.X, moveMsg.Y)
+	txhash, err := b.txBuilder.InteractWithContract(ws.WalletID, "Move", moveMsg.X, moveMsg.Y)
 	if err != nil {
 		value := fmt.Errorf("error sending move tx")
 		return newMoveMessageError(value), value
 	}
+
+	b.db.AddTxSent(data.UnconfirmedTransaction{
+		Txhash: txhash.Hex(),
+		Events: prediction.Events,
+	})
 
 	return newMoveMessageResponse(), nil
 }
