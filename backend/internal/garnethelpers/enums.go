@@ -5,6 +5,7 @@ const (
 	Renzok
 	Hanchon
 )
+
 const (
 	Walking = iota
 	Fighting

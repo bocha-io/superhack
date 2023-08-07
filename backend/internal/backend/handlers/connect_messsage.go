@@ -57,7 +57,7 @@ func (b *Backend) connectMessage(ws *messages.WebSocketContainer, p []byte) (Con
 		return newConnectMessageError(err), err
 	}
 
-	user, err := b.inMemoryDb.Login(connectMsg.User, connectMsg.Password)
+	user, err := b.inMemoryDB.Login(connectMsg.User, connectMsg.Password)
 	if err != nil {
 		// Register the user
 		if connectMsg.User == "" {
@@ -67,7 +67,7 @@ func (b *Backend) connectMessage(ws *messages.WebSocketContainer, p []byte) (Con
 
 		logger.LogDebug(fmt.Sprintf("[backend] registering user %s", connectMsg.User))
 
-		index, address, err := b.inMemoryDb.RegisterUser(connectMsg.User, connectMsg.Password, b.mnemonic)
+		index, address, err := b.inMemoryDB.RegisterUser(connectMsg.User, connectMsg.Password, b.mnemonic)
 		if err != nil {
 			return newConnectMessageError(err), err
 		}
@@ -85,7 +85,7 @@ func (b *Backend) connectMessage(ws *messages.WebSocketContainer, p []byte) (Con
 		logger.LogInfo(fmt.Sprintf("[backend] wallet registered correctly %s", address))
 	}
 
-	user, err = b.inMemoryDb.Login(connectMsg.User, connectMsg.Password)
+	user, err = b.inMemoryDB.Login(connectMsg.User, connectMsg.Password)
 	if err != nil {
 		value := fmt.Errorf("incorrect credentials")
 		return newConnectMessageError(value), value

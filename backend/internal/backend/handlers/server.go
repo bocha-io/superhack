@@ -17,7 +17,7 @@ type Backend struct {
 	db        *data.Database
 	wsList    map[string]*messages.WebSocketContainer
 
-	inMemoryDb *InMemoryDatabase
+	inMemoryDB *InMemoryDatabase
 }
 
 func NewBackend(worldABI []byte, db *data.Database, endpoint string, worldAddress string, pk *ecdsa.PrivateKey, userMnemonics string) *Backend {
@@ -50,13 +50,14 @@ func NewBackend(worldABI []byte, db *data.Database, endpoint string, worldAddres
 		txBuilder: *txBuilder,
 		wsList:    map[string]*messages.WebSocketContainer{},
 
-		inMemoryDb: NewInMemoryDatabase(txBuilder),
+		inMemoryDB: NewInMemoryDatabase(txBuilder),
 	}
 
 	return b
 }
 
 func (b *Backend) HandleMessage(g *messages.Server, ws *messages.WebSocketContainer, m messages.BasicMessage, p []byte) error {
+	_ = g
 	switch m.MsgType {
 	case ConnectMessageType:
 		if msg, err := b.connectMessage(ws, p); err != nil {
