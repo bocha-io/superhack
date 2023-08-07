@@ -10,7 +10,7 @@ import {Position} from "../codegen/tables/Position.sol";
 import {addressToEntityKey} from "../addressToEntityKey.sol";
 
 contract MoveSystem is System {
-    function move(int32 newX, int32 newY) public {
+    function Move(int32 newX, int32 newY) public {
         bytes32 senderKey = addressToEntityKey(_msgSender());
 
         // Make sure that the player is registered

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/bocha-io/game-backend/x/messages"
+	"github.com/bocha-io/superhack/internal/garnethelpers"
 )
 
 type MoveMessage struct {
@@ -59,8 +60,11 @@ func (b *Backend) moveMessage(ws *messages.WebSocketContainer, p []byte) (MoveMe
 		return newMoveMessageError(err), err
 	}
 
+	prediction := garnethelpers.NewPrediction(b.db)
+	prediction.Move(int64(moveMsg.X), int64(moveMsg.Y), ws.WalletAddress)
+
 	// TODO: autogenerate predictions and call it here!
-	_, err = b.txBuilder.InteractWithContract(ws.WalletID, "move", moveMsg.X, moveMsg.Y)
+	_, err = b.txBuilder.InteractWithContract(ws.WalletID, "Move", moveMsg.X, moveMsg.Y)
 	if err != nil {
 		value := fmt.Errorf("error sending move tx")
 		return newMoveMessageError(value), value
