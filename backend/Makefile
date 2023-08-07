@@ -6,6 +6,9 @@ build:
 lint:
 	golangci-lint run --fix --out-format=line-number --issues-exit-code=0 --config .golangci.yml --color always ./...
 
+fix-lines:
+	@golines -w .
+
 run-localnet:
 	@source /opt/homebrew/opt/nvm/nvm.sh && nvm use v18.12.0 && cd contracts-builder/contracts && pnpm run devnode
 
@@ -14,5 +17,4 @@ contracts:
 
 init-contracts:
 	@source /opt/homebrew/opt/nvm/nvm.sh && nvm use v18.12.0 && cd contracts-builder/contracts && pnpm install
-
 

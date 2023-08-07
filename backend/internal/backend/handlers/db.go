@@ -32,7 +32,11 @@ func NewInMemoryDatabase(txBuilder *txbuilder.TxBuilder) *InMemoryDatabase {
 	}
 }
 
-func (db *InMemoryDatabase) RegisterUser(username string, password string, mnemonic string) (int, string, error) {
+func (db *InMemoryDatabase) RegisterUser(
+	username string,
+	password string,
+	mnemonic string,
+) (int, string, error) {
 	db.mu.Lock()
 	defer db.mu.Unlock()
 	if _, ok := (*db.Users)[username]; ok {
