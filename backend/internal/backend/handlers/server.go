@@ -20,7 +20,14 @@ type Backend struct {
 	inMemoryDB *InMemoryDatabase
 }
 
-func NewBackend(worldABI []byte, db *data.Database, endpoint string, worldAddress string, pk *ecdsa.PrivateKey, userMnemonics string) *Backend {
+func NewBackend(
+	worldABI []byte,
+	db *data.Database,
+	endpoint string,
+	worldAddress string,
+	pk *ecdsa.PrivateKey,
+	userMnemonics string,
+) *Backend {
 	txBuilder := txbuilder.NexTxBuilder(
 		worldAddress,
 		txbuilder.NewWorldABI(worldABI),
@@ -38,7 +45,9 @@ func NewBackend(worldABI []byte, db *data.Database, endpoint string, worldAddres
 		_, errFaucet := txBuilder.FoundAccount(i)
 		logger.LogInfo(fmt.Sprintf("[backend] sending coins to wallet: %d", i))
 		if errFaucet != nil {
-			logger.LogError(fmt.Sprintf("[backend] error sending coins to wallet %d, %s", i, errFaucet.Error()))
+			logger.LogError(
+				fmt.Sprintf("[backend] error sending coins to wallet %d, %s", i, errFaucet.Error()),
+			)
 		}
 		i++
 	}
@@ -56,7 +65,12 @@ func NewBackend(worldABI []byte, db *data.Database, endpoint string, worldAddres
 	return b
 }
 
-func (b *Backend) HandleMessage(g *messages.Server, ws *messages.WebSocketContainer, m messages.BasicMessage, p []byte) error {
+func (b *Backend) HandleMessage(
+	g *messages.Server,
+	ws *messages.WebSocketContainer,
+	m messages.BasicMessage,
+	p []byte,
+) error {
 	_ = g
 	switch m.MsgType {
 	case ConnectMessageType:

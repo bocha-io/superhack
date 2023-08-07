@@ -50,7 +50,10 @@ func newConnectMessageResponse() ConnectMessageResponse {
 	}
 }
 
-func (b *Backend) connectMessage(ws *messages.WebSocketContainer, p []byte) (ConnectMessageResponse, error) {
+func (b *Backend) connectMessage(
+	ws *messages.WebSocketContainer,
+	p []byte,
+) (ConnectMessageResponse, error) {
 	var connectMsg ConnectMessage
 	err := json.Unmarshal(p, &connectMsg)
 	if err != nil {
@@ -67,18 +70,32 @@ func (b *Backend) connectMessage(ws *messages.WebSocketContainer, p []byte) (Con
 
 		logger.LogDebug(fmt.Sprintf("[backend] registering user %s", connectMsg.User))
 
-		index, address, err := b.inMemoryDB.RegisterUser(connectMsg.User, connectMsg.Password, b.mnemonic)
+		index, address, err := b.inMemoryDB.RegisterUser(
+			connectMsg.User,
+			connectMsg.Password,
+			b.mnemonic,
+		)
 		if err != nil {
 			return newConnectMessageError(err), err
 		}
 
-		logger.LogDebug(fmt.Sprintf("[backend] registered user %s with id %d", connectMsg.User, index))
+		logger.LogDebug(
+			fmt.Sprintf("[backend] registered user %s with id %d", connectMsg.User, index),
+		)
 
-		logger.LogDebug(fmt.Sprintf("[backend] registering the wallet %s in the chain %s", address, connectMsg.User))
+		logger.LogDebug(
+			fmt.Sprintf(
+				"[backend] registering the wallet %s in the chain %s",
+				address,
+				connectMsg.User,
+			),
+		)
 
 		_, err = b.txBuilder.InteractWithContract(index, "register")
 		if err != nil {
-			logger.LogError(fmt.Sprintf("[backend] error registering wallet %s, %s", address, err.Error()))
+			logger.LogError(
+				fmt.Sprintf("[backend] error registering wallet %s, %s", address, err.Error()),
+			)
 			value := fmt.Errorf("error registering the wallet")
 			return newConnectMessageError(value), value
 		}

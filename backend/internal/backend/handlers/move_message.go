@@ -50,7 +50,10 @@ func newMoveMessageResponse() MoveMessageResponse {
 	}
 }
 
-func (b *Backend) moveMessage(ws *messages.WebSocketContainer, p []byte) (resp MoveMessageResponse, err error) {
+func (b *Backend) moveMessage(
+	ws *messages.WebSocketContainer,
+	p []byte,
+) (resp MoveMessageResponse, err error) {
 	// The prediction will panic if something fails in the database, catch it here
 	defer func() {
 		if r := recover(); r != nil {
