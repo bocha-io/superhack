@@ -6,10 +6,19 @@ public class OptionsController : MonoBehaviour
 {
     public List<MenuOption> options;
     public int selected;
+    public bool canGoBack;
+    [SerializeField] BottomPanelController _parentPanel;
+    
+    public void Setup(List<string> names){
+        
+    }
 
-    // public void Setup(List<MenuOption> load){
 
-    // }
+    public void GoBack(){
+        if(canGoBack){
+            _parentPanel.ChangeState(PanelState.PickingAction);
+        }
+    }
 
     public void Update(){
         if(Input.GetKeyDown(KeyCode.D)){
@@ -32,7 +41,19 @@ public class OptionsController : MonoBehaviour
                 selected-=2;
             }                
         }
+        
+        if(Input.GetKeyDown(KeyCode.F)){
+            options[selected].Execute();
+        }
+        if(Input.GetKeyDown(KeyCode.G)){
+            if (canGoBack)
+                GoBack();
+        }
 
+        Select();
+    }
+
+    public virtual void Select(){
         for (int i=0; i< options.Count; i++){
             options[i].Select(i==selected);
         }
