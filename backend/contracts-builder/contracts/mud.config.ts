@@ -35,6 +35,7 @@ export default mudConfig({
   enums: {
     MonType: ["Ramon", "Renzok", "Hanchon"],
     StatusType: ["Walking", "Fighting"],
+    ActionType: ["Attack", "Swap"],
   },
   modules: [],
 });
