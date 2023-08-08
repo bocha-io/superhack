@@ -6,7 +6,16 @@ function addressToEntityKey(address addr) pure returns (bytes32) {
 }
 
 function monKey(bytes32 playerKey, uint8 ID) pure returns (bytes32) {
-    return playerKey ^ bytes32(uint256(ID));
+    if (ID == 0) {
+        return playerKey ^ bytes32("1");
+    }
+    if (ID == 1) {
+        return playerKey ^ bytes32("2");
+    }
+    if (ID == 2) {
+        return playerKey ^ bytes32("3");
+    }
+    return bytes32(playerKey);
 }
 
-// monKey := strings.Replace(playerKey, "0x000000000000000000000000", "0x100000000000000000000000", 1)
+// monKey := strings.Replace(playerKey, "0x000000000000000000000000", "0x310000000000000000000000", 1)
