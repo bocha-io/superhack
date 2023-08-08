@@ -26,7 +26,7 @@ func (p *Prediction) PlayerGet(key string) bool {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayer(key)
+	field0, err := p.blockchainConnection.GetPlayer(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -45,14 +45,14 @@ func (p *Prediction) PlayerKeys(value bool) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayer(value)
+	return p.blockchainConnection.GetRowsPlayer(value)
 }
 
 func (p *Prediction) StatusGet(key string) int64 {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getStatus(key)
+	field0, err := p.blockchainConnection.GetStatus(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -71,14 +71,14 @@ func (p *Prediction) StatusKeys(value int64) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsStatus(value)
+	return p.blockchainConnection.GetRowsStatus(value)
 }
 
 func (p *Prediction) PositionGet(key string) (int64, int64) {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, field1, err := p.blockchainConnection.getPosition(key)
+	field0, field1, err := p.blockchainConnection.GetPosition(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -97,14 +97,14 @@ func (p *Prediction) PositionKeys(x int64, y int64) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPosition(x, y)
+	return p.blockchainConnection.GetRowsPosition(x, y)
 }
 
 func (p *Prediction) MatchGet(key string) bool {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getMatch(key)
+	field0, err := p.blockchainConnection.GetMatch(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -123,14 +123,14 @@ func (p *Prediction) MatchKeys(value bool) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsMatch(value)
+	return p.blockchainConnection.GetRowsMatch(value)
 }
 
 func (p *Prediction) PlayerOneGet(key string) string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayerOne(key)
+	field0, err := p.blockchainConnection.GetPlayerOne(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -149,14 +149,14 @@ func (p *Prediction) PlayerOneKeys(value string) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayerOne(value)
+	return p.blockchainConnection.GetRowsPlayerOne(value)
 }
 
 func (p *Prediction) PlayerTwoGet(key string) string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayerTwo(key)
+	field0, err := p.blockchainConnection.GetPlayerTwo(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -175,14 +175,14 @@ func (p *Prediction) PlayerTwoKeys(value string) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayerTwo(value)
+	return p.blockchainConnection.GetRowsPlayerTwo(value)
 }
 
 func (p *Prediction) PlayerOneCurrentMonGet(key string) string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayerOneCurrentMon(key)
+	field0, err := p.blockchainConnection.GetPlayerOneCurrentMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -201,14 +201,14 @@ func (p *Prediction) PlayerOneCurrentMonKeys(value string) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayerOneCurrentMon(value)
+	return p.blockchainConnection.GetRowsPlayerOneCurrentMon(value)
 }
 
 func (p *Prediction) PlayerTwoCurrentMonGet(key string) string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayerTwoCurrentMon(key)
+	field0, err := p.blockchainConnection.GetPlayerTwoCurrentMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -227,14 +227,14 @@ func (p *Prediction) PlayerTwoCurrentMonKeys(value string) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayerTwoCurrentMon(value)
+	return p.blockchainConnection.GetRowsPlayerTwoCurrentMon(value)
 }
 
 func (p *Prediction) PlayerFirstMonGet(key string) string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayerFirstMon(key)
+	field0, err := p.blockchainConnection.GetPlayerFirstMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -253,14 +253,14 @@ func (p *Prediction) PlayerFirstMonKeys(value string) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayerFirstMon(value)
+	return p.blockchainConnection.GetRowsPlayerFirstMon(value)
 }
 
 func (p *Prediction) PlayerSecondMonGet(key string) string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayerSecondMon(key)
+	field0, err := p.blockchainConnection.GetPlayerSecondMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -279,14 +279,14 @@ func (p *Prediction) PlayerSecondMonKeys(value string) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayerSecondMon(value)
+	return p.blockchainConnection.GetRowsPlayerSecondMon(value)
 }
 
 func (p *Prediction) PlayerThirdMonGet(key string) string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getPlayerThirdMon(key)
+	field0, err := p.blockchainConnection.GetPlayerThirdMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -305,14 +305,14 @@ func (p *Prediction) PlayerThirdMonKeys(value string) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsPlayerThirdMon(value)
+	return p.blockchainConnection.GetRowsPlayerThirdMon(value)
 }
 
 func (p *Prediction) MonGet(key string) bool {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getMon(key)
+	field0, err := p.blockchainConnection.GetMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -331,14 +331,14 @@ func (p *Prediction) MonKeys(value bool) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsMon(value)
+	return p.blockchainConnection.GetRowsMon(value)
 }
 
 func (p *Prediction) MonSpecieGet(key string) int64 {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getMonSpecie(key)
+	field0, err := p.blockchainConnection.GetMonSpecie(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -357,14 +357,14 @@ func (p *Prediction) MonSpecieKeys(value int64) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsMonSpecie(value)
+	return p.blockchainConnection.GetRowsMonSpecie(value)
 }
 
 func (p *Prediction) MonHpGet(key string) int64 {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getMonHp(key)
+	field0, err := p.blockchainConnection.GetMonHp(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -383,14 +383,14 @@ func (p *Prediction) MonHpKeys(value int64) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsMonHp(value)
+	return p.blockchainConnection.GetRowsMonHp(value)
 }
 
 func (p *Prediction) InventoryFirstMonGet(key string) int64 {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getInventoryFirstMon(key)
+	field0, err := p.blockchainConnection.GetInventoryFirstMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -409,14 +409,14 @@ func (p *Prediction) InventoryFirstMonKeys(value int64) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsInventoryFirstMon(value)
+	return p.blockchainConnection.GetRowsInventoryFirstMon(value)
 }
 
 func (p *Prediction) InventorySecondMonGet(key string) int64 {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getInventorySecondMon(key)
+	field0, err := p.blockchainConnection.GetInventorySecondMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -435,14 +435,14 @@ func (p *Prediction) InventorySecondMonKeys(value int64) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsInventorySecondMon(value)
+	return p.blockchainConnection.GetRowsInventorySecondMon(value)
 }
 
 func (p *Prediction) InventoryThirdMonGet(key string) int64 {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	field0, err := p.blockchainConnection.getInventoryThirdMon(key)
+	field0, err := p.blockchainConnection.GetInventoryThirdMon(key)
 	if err != nil {
 		panic("value not found")
 	}
@@ -461,5 +461,5 @@ func (p *Prediction) InventoryThirdMonKeys(value int64) []string {
 	if !p.blockchainConnection.active {
 		panic("game object is not active")
 	}
-	return p.blockchainConnection.getRowsInventoryThirdMon(value)
+	return p.blockchainConnection.GetRowsInventoryThirdMon(value)
 }

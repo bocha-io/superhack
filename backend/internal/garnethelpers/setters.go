@@ -1,9 +1,8 @@
 package garnethelpers
 
 import (
-	"math/big"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"math/big"
 
 	"github.com/bocha-io/garnet/x/indexer/data"
 )
