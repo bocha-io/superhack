@@ -8,12 +8,7 @@ import (
 	"github.com/bocha-io/garnet/x/indexer/data"
 )
 
-func (g *GameObject) getPlayer(key string) (bool, error) {
-	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Player")
-	if err != nil {
-		return false, err
-	}
-
+func (g *GameObject) ProcessFieldsPlayer(fields []data.Field) (bool, error) {
 	if len(fields) != 1 {
 		return false, fmt.Errorf("invalid amount of fields")
 	}
@@ -22,9 +17,21 @@ func (g *GameObject) getPlayer(key string) (bool, error) {
 	return field0, nil
 }
 
-func (g GameObject) getRowsPlayer(arg0 bool) []string {
+func (g *GameObject) GetPlayer(key string) (bool, error) {
+	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Player")
+	if err != nil {
+		return false, err
+	}
+	return g.ProcessFieldsPlayer(fields)
+}
+
+func (g GameObject) GetAllRowsPlayer() map[string][]data.Field {
 	table := g.world.GetTableByName("Player")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayer(arg0 bool) []string {
+	rows := g.GetAllRowsPlayer()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -39,12 +46,7 @@ func (g GameObject) getRowsPlayer(arg0 bool) []string {
 	return []string{}
 }
 
-func (g *GameObject) getStatus(key string) (int64, error) {
-	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Status")
-	if err != nil {
-		return 0, err
-	}
-
+func (g *GameObject) ProcessFieldsStatus(fields []data.Field) (int64, error) {
 	if len(fields) != 1 {
 		return 0, fmt.Errorf("invalid amount of fields")
 	}
@@ -56,9 +58,21 @@ func (g *GameObject) getStatus(key string) (int64, error) {
 	return field0, nil
 }
 
-func (g GameObject) getRowsStatus(arg0 int64) []string {
+func (g *GameObject) GetStatus(key string) (int64, error) {
+	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Status")
+	if err != nil {
+		return 0, err
+	}
+	return g.ProcessFieldsStatus(fields)
+}
+
+func (g GameObject) GetAllRowsStatus() map[string][]data.Field {
 	table := g.world.GetTableByName("Status")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsStatus(arg0 int64) []string {
+	rows := g.GetAllRowsStatus()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -76,12 +90,7 @@ func (g GameObject) getRowsStatus(arg0 int64) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPosition(key string) (int64, int64, error) {
-	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Position")
-	if err != nil {
-		return 0, 0, err
-	}
-
+func (g *GameObject) ProcessFieldsPosition(fields []data.Field) (int64, int64, error) {
 	if len(fields) != 2 {
 		return 0, 0, fmt.Errorf("invalid amount of fields")
 	}
@@ -97,9 +106,21 @@ func (g *GameObject) getPosition(key string) (int64, int64, error) {
 	return field0, field1, nil
 }
 
-func (g GameObject) getRowsPosition(arg0 int64, arg1 int64) []string {
+func (g *GameObject) GetPosition(key string) (int64, int64, error) {
+	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Position")
+	if err != nil {
+		return 0, 0, err
+	}
+	return g.ProcessFieldsPosition(fields)
+}
+
+func (g GameObject) GetAllRowsPosition() map[string][]data.Field {
 	table := g.world.GetTableByName("Position")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPosition(arg0 int64, arg1 int64) []string {
+	rows := g.GetAllRowsPosition()
 	for k, fields := range rows {
 		if len(fields) != 2 {
 			continue
@@ -124,23 +145,30 @@ func (g GameObject) getRowsPosition(arg0 int64, arg1 int64) []string {
 	return []string{}
 }
 
-func (g *GameObject) getMatch(key string) (bool, error) {
+func (g *GameObject) ProcessFieldsMatch(fields []data.Field) (bool, error) {
+	if len(fields) != 1 {
+		return false, fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := fields[0].Data.String() == "true"
+	return field0, nil
+}
+
+func (g *GameObject) GetMatch(key string) (bool, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Match")
 	if err != nil {
 		return false, err
 	}
-
-	if len(fields) != 1 {
-		return false, fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := fields[0].Data.String() == "true"
-	return field0, nil
+	return g.ProcessFieldsMatch(fields)
 }
 
-func (g GameObject) getRowsMatch(arg0 bool) []string {
+func (g GameObject) GetAllRowsMatch() map[string][]data.Field {
 	table := g.world.GetTableByName("Match")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsMatch(arg0 bool) []string {
+	rows := g.GetAllRowsMatch()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -155,23 +183,30 @@ func (g GameObject) getRowsMatch(arg0 bool) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPlayerOne(key string) (string, error) {
+func (g *GameObject) ProcessFieldsPlayerOne(fields []data.Field) (string, error) {
+	if len(fields) != 1 {
+		return "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	return field0, nil
+}
+
+func (g *GameObject) GetPlayerOne(key string) (string, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "PlayerOne")
 	if err != nil {
 		return "", err
 	}
-
-	if len(fields) != 1 {
-		return "", fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
-	return field0, nil
+	return g.ProcessFieldsPlayerOne(fields)
 }
 
-func (g GameObject) getRowsPlayerOne(arg0 string) []string {
+func (g GameObject) GetAllRowsPlayerOne() map[string][]data.Field {
 	table := g.world.GetTableByName("PlayerOne")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayerOne(arg0 string) []string {
+	rows := g.GetAllRowsPlayerOne()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -186,23 +221,30 @@ func (g GameObject) getRowsPlayerOne(arg0 string) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPlayerTwo(key string) (string, error) {
+func (g *GameObject) ProcessFieldsPlayerTwo(fields []data.Field) (string, error) {
+	if len(fields) != 1 {
+		return "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	return field0, nil
+}
+
+func (g *GameObject) GetPlayerTwo(key string) (string, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "PlayerTwo")
 	if err != nil {
 		return "", err
 	}
-
-	if len(fields) != 1 {
-		return "", fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
-	return field0, nil
+	return g.ProcessFieldsPlayerTwo(fields)
 }
 
-func (g GameObject) getRowsPlayerTwo(arg0 string) []string {
+func (g GameObject) GetAllRowsPlayerTwo() map[string][]data.Field {
 	table := g.world.GetTableByName("PlayerTwo")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayerTwo(arg0 string) []string {
+	rows := g.GetAllRowsPlayerTwo()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -217,23 +259,30 @@ func (g GameObject) getRowsPlayerTwo(arg0 string) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPlayerOneCurrentMon(key string) (string, error) {
+func (g *GameObject) ProcessFieldsPlayerOneCurrentMon(fields []data.Field) (string, error) {
+	if len(fields) != 1 {
+		return "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	return field0, nil
+}
+
+func (g *GameObject) GetPlayerOneCurrentMon(key string) (string, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "PlayerOneCurrentMon")
 	if err != nil {
 		return "", err
 	}
-
-	if len(fields) != 1 {
-		return "", fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
-	return field0, nil
+	return g.ProcessFieldsPlayerOneCurrentMon(fields)
 }
 
-func (g GameObject) getRowsPlayerOneCurrentMon(arg0 string) []string {
+func (g GameObject) GetAllRowsPlayerOneCurrentMon() map[string][]data.Field {
 	table := g.world.GetTableByName("PlayerOneCurrentMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayerOneCurrentMon(arg0 string) []string {
+	rows := g.GetAllRowsPlayerOneCurrentMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -248,23 +297,30 @@ func (g GameObject) getRowsPlayerOneCurrentMon(arg0 string) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPlayerTwoCurrentMon(key string) (string, error) {
+func (g *GameObject) ProcessFieldsPlayerTwoCurrentMon(fields []data.Field) (string, error) {
+	if len(fields) != 1 {
+		return "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	return field0, nil
+}
+
+func (g *GameObject) GetPlayerTwoCurrentMon(key string) (string, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "PlayerTwoCurrentMon")
 	if err != nil {
 		return "", err
 	}
-
-	if len(fields) != 1 {
-		return "", fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
-	return field0, nil
+	return g.ProcessFieldsPlayerTwoCurrentMon(fields)
 }
 
-func (g GameObject) getRowsPlayerTwoCurrentMon(arg0 string) []string {
+func (g GameObject) GetAllRowsPlayerTwoCurrentMon() map[string][]data.Field {
 	table := g.world.GetTableByName("PlayerTwoCurrentMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayerTwoCurrentMon(arg0 string) []string {
+	rows := g.GetAllRowsPlayerTwoCurrentMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -279,23 +335,30 @@ func (g GameObject) getRowsPlayerTwoCurrentMon(arg0 string) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPlayerFirstMon(key string) (string, error) {
+func (g *GameObject) ProcessFieldsPlayerFirstMon(fields []data.Field) (string, error) {
+	if len(fields) != 1 {
+		return "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	return field0, nil
+}
+
+func (g *GameObject) GetPlayerFirstMon(key string) (string, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "PlayerFirstMon")
 	if err != nil {
 		return "", err
 	}
-
-	if len(fields) != 1 {
-		return "", fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
-	return field0, nil
+	return g.ProcessFieldsPlayerFirstMon(fields)
 }
 
-func (g GameObject) getRowsPlayerFirstMon(arg0 string) []string {
+func (g GameObject) GetAllRowsPlayerFirstMon() map[string][]data.Field {
 	table := g.world.GetTableByName("PlayerFirstMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayerFirstMon(arg0 string) []string {
+	rows := g.GetAllRowsPlayerFirstMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -310,23 +373,30 @@ func (g GameObject) getRowsPlayerFirstMon(arg0 string) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPlayerSecondMon(key string) (string, error) {
+func (g *GameObject) ProcessFieldsPlayerSecondMon(fields []data.Field) (string, error) {
+	if len(fields) != 1 {
+		return "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	return field0, nil
+}
+
+func (g *GameObject) GetPlayerSecondMon(key string) (string, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "PlayerSecondMon")
 	if err != nil {
 		return "", err
 	}
-
-	if len(fields) != 1 {
-		return "", fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
-	return field0, nil
+	return g.ProcessFieldsPlayerSecondMon(fields)
 }
 
-func (g GameObject) getRowsPlayerSecondMon(arg0 string) []string {
+func (g GameObject) GetAllRowsPlayerSecondMon() map[string][]data.Field {
 	table := g.world.GetTableByName("PlayerSecondMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayerSecondMon(arg0 string) []string {
+	rows := g.GetAllRowsPlayerSecondMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -341,23 +411,30 @@ func (g GameObject) getRowsPlayerSecondMon(arg0 string) []string {
 	return []string{}
 }
 
-func (g *GameObject) getPlayerThirdMon(key string) (string, error) {
+func (g *GameObject) ProcessFieldsPlayerThirdMon(fields []data.Field) (string, error) {
+	if len(fields) != 1 {
+		return "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	return field0, nil
+}
+
+func (g *GameObject) GetPlayerThirdMon(key string) (string, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "PlayerThirdMon")
 	if err != nil {
 		return "", err
 	}
-
-	if len(fields) != 1 {
-		return "", fmt.Errorf("invalid amount of fields")
-	}
-
-	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
-	return field0, nil
+	return g.ProcessFieldsPlayerThirdMon(fields)
 }
 
-func (g GameObject) getRowsPlayerThirdMon(arg0 string) []string {
+func (g GameObject) GetAllRowsPlayerThirdMon() map[string][]data.Field {
 	table := g.world.GetTableByName("PlayerThirdMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsPlayerThirdMon(arg0 string) []string {
+	rows := g.GetAllRowsPlayerThirdMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -372,12 +449,7 @@ func (g GameObject) getRowsPlayerThirdMon(arg0 string) []string {
 	return []string{}
 }
 
-func (g *GameObject) getMon(key string) (bool, error) {
-	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Mon")
-	if err != nil {
-		return false, err
-	}
-
+func (g *GameObject) ProcessFieldsMon(fields []data.Field) (bool, error) {
 	if len(fields) != 1 {
 		return false, fmt.Errorf("invalid amount of fields")
 	}
@@ -386,9 +458,21 @@ func (g *GameObject) getMon(key string) (bool, error) {
 	return field0, nil
 }
 
-func (g GameObject) getRowsMon(arg0 bool) []string {
+func (g *GameObject) GetMon(key string) (bool, error) {
+	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Mon")
+	if err != nil {
+		return false, err
+	}
+	return g.ProcessFieldsMon(fields)
+}
+
+func (g GameObject) GetAllRowsMon() map[string][]data.Field {
 	table := g.world.GetTableByName("Mon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsMon(arg0 bool) []string {
+	rows := g.GetAllRowsMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -403,26 +487,33 @@ func (g GameObject) getRowsMon(arg0 bool) []string {
 	return []string{}
 }
 
-func (g *GameObject) getMonSpecie(key string) (int64, error) {
+func (g *GameObject) ProcessFieldsMonSpecie(fields []data.Field) (int64, error) {
+	if len(fields) != 1 {
+		return 0, fmt.Errorf("invalid amount of fields")
+	}
+
+	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return field0, nil
+}
+
+func (g *GameObject) GetMonSpecie(key string) (int64, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "MonSpecie")
 	if err != nil {
 		return 0, err
 	}
-
-	if len(fields) != 1 {
-		return 0, fmt.Errorf("invalid amount of fields")
-	}
-
-	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
-	if err != nil {
-		return 0, err
-	}
-	return field0, nil
+	return g.ProcessFieldsMonSpecie(fields)
 }
 
-func (g GameObject) getRowsMonSpecie(arg0 int64) []string {
+func (g GameObject) GetAllRowsMonSpecie() map[string][]data.Field {
 	table := g.world.GetTableByName("MonSpecie")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsMonSpecie(arg0 int64) []string {
+	rows := g.GetAllRowsMonSpecie()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -440,26 +531,33 @@ func (g GameObject) getRowsMonSpecie(arg0 int64) []string {
 	return []string{}
 }
 
-func (g *GameObject) getMonHp(key string) (int64, error) {
+func (g *GameObject) ProcessFieldsMonHp(fields []data.Field) (int64, error) {
+	if len(fields) != 1 {
+		return 0, fmt.Errorf("invalid amount of fields")
+	}
+
+	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return field0, nil
+}
+
+func (g *GameObject) GetMonHp(key string) (int64, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "MonHp")
 	if err != nil {
 		return 0, err
 	}
-
-	if len(fields) != 1 {
-		return 0, fmt.Errorf("invalid amount of fields")
-	}
-
-	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
-	if err != nil {
-		return 0, err
-	}
-	return field0, nil
+	return g.ProcessFieldsMonHp(fields)
 }
 
-func (g GameObject) getRowsMonHp(arg0 int64) []string {
+func (g GameObject) GetAllRowsMonHp() map[string][]data.Field {
 	table := g.world.GetTableByName("MonHp")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsMonHp(arg0 int64) []string {
+	rows := g.GetAllRowsMonHp()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -477,26 +575,33 @@ func (g GameObject) getRowsMonHp(arg0 int64) []string {
 	return []string{}
 }
 
-func (g *GameObject) getInventoryFirstMon(key string) (int64, error) {
+func (g *GameObject) ProcessFieldsInventoryFirstMon(fields []data.Field) (int64, error) {
+	if len(fields) != 1 {
+		return 0, fmt.Errorf("invalid amount of fields")
+	}
+
+	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return field0, nil
+}
+
+func (g *GameObject) GetInventoryFirstMon(key string) (int64, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "InventoryFirstMon")
 	if err != nil {
 		return 0, err
 	}
-
-	if len(fields) != 1 {
-		return 0, fmt.Errorf("invalid amount of fields")
-	}
-
-	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
-	if err != nil {
-		return 0, err
-	}
-	return field0, nil
+	return g.ProcessFieldsInventoryFirstMon(fields)
 }
 
-func (g GameObject) getRowsInventoryFirstMon(arg0 int64) []string {
+func (g GameObject) GetAllRowsInventoryFirstMon() map[string][]data.Field {
 	table := g.world.GetTableByName("InventoryFirstMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsInventoryFirstMon(arg0 int64) []string {
+	rows := g.GetAllRowsInventoryFirstMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -514,26 +619,33 @@ func (g GameObject) getRowsInventoryFirstMon(arg0 int64) []string {
 	return []string{}
 }
 
-func (g *GameObject) getInventorySecondMon(key string) (int64, error) {
+func (g *GameObject) ProcessFieldsInventorySecondMon(fields []data.Field) (int64, error) {
+	if len(fields) != 1 {
+		return 0, fmt.Errorf("invalid amount of fields")
+	}
+
+	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return field0, nil
+}
+
+func (g *GameObject) GetInventorySecondMon(key string) (int64, error) {
 	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "InventorySecondMon")
 	if err != nil {
 		return 0, err
 	}
-
-	if len(fields) != 1 {
-		return 0, fmt.Errorf("invalid amount of fields")
-	}
-
-	field0, err := strconv.ParseInt(fields[0].Data.String(), 10, 32)
-	if err != nil {
-		return 0, err
-	}
-	return field0, nil
+	return g.ProcessFieldsInventorySecondMon(fields)
 }
 
-func (g GameObject) getRowsInventorySecondMon(arg0 int64) []string {
+func (g GameObject) GetAllRowsInventorySecondMon() map[string][]data.Field {
 	table := g.world.GetTableByName("InventorySecondMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsInventorySecondMon(arg0 int64) []string {
+	rows := g.GetAllRowsInventorySecondMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue
@@ -551,12 +663,7 @@ func (g GameObject) getRowsInventorySecondMon(arg0 int64) []string {
 	return []string{}
 }
 
-func (g *GameObject) getInventoryThirdMon(key string) (int64, error) {
-	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "InventoryThirdMon")
-	if err != nil {
-		return 0, err
-	}
-
+func (g *GameObject) ProcessFieldsInventoryThirdMon(fields []data.Field) (int64, error) {
 	if len(fields) != 1 {
 		return 0, fmt.Errorf("invalid amount of fields")
 	}
@@ -568,9 +675,21 @@ func (g *GameObject) getInventoryThirdMon(key string) (int64, error) {
 	return field0, nil
 }
 
-func (g GameObject) getRowsInventoryThirdMon(arg0 int64) []string {
+func (g *GameObject) GetInventoryThirdMon(key string) (int64, error) {
+	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "InventoryThirdMon")
+	if err != nil {
+		return 0, err
+	}
+	return g.ProcessFieldsInventoryThirdMon(fields)
+}
+
+func (g GameObject) GetAllRowsInventoryThirdMon() map[string][]data.Field {
 	table := g.world.GetTableByName("InventoryThirdMon")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsInventoryThirdMon(arg0 int64) []string {
+	rows := g.GetAllRowsInventoryThirdMon()
 	for k, fields := range rows {
 		if len(fields) != 1 {
 			continue

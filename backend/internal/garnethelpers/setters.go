@@ -3,9 +3,8 @@ package garnethelpers
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-
 	"github.com/bocha-io/garnet/x/indexer/data"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 func BytesEventFromString(val string) []byte {
