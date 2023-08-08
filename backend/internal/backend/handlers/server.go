@@ -96,10 +96,9 @@ func (b *Backend) broadcastPositions() {
 	status := MapStatus{Players: ret, MsgType: "mapstatus"}
 
 	for _, v := range b.wsList {
-		logger.LogInfo(fmt.Sprintf("[TEST] broadcasting to %s", v.WalletAddress))
+		logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", v.WalletAddress))
 		if v.Conn != nil {
 			_ = messages.WriteJSON(v.Conn, v.ConnMutex, status)
-			logger.LogInfo(fmt.Sprintf("[TEST] msg sent %s", v.WalletAddress))
 		}
 	}
 }
@@ -117,6 +116,9 @@ func (b *Backend) HandleMessage(
 			return err
 		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, msg); err != nil {
 			return err
+		} else {
+			// TODO: remove websocket from list when connection is closed
+			b.wsList[ws.WalletAddress] = ws
 		}
 
 	case MoveMessageType:
