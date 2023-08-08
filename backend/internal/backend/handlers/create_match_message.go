@@ -6,7 +6,9 @@ import (
 	"strings"
 
 	"github.com/bocha-io/game-backend/x/messages"
+	"github.com/bocha-io/garnet/x/indexer/data"
 	"github.com/bocha-io/logger"
+	"github.com/bocha-io/superhack/internal/garnethelpers"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
 )
 
@@ -58,7 +60,7 @@ func (b *Backend) createMatchMessage(
 	// The prediction will panic if something fails in the database, catch it here
 	defer func() {
 		if r := recover(); r != nil {
-			err = fmt.Errorf("error getting info from the database")
+			err = fmt.Errorf("error getting info from the database: %v", r)
 			resp = CreateMatchMessageResponse{}
 		}
 	}()
@@ -73,25 +75,36 @@ func (b *Backend) createMatchMessage(
 		return newCreateMatchMessageError(err), err
 	}
 
-	playerA, err := txbuilder.StringToSlice(strings.Replace(creatematchMsg.PlayerA, "0x", "0x000000000000000000000000", 1))
+	// We get the wallet address, so we need to add the padding to the ids
+	creatematchMsg.PlayerA = strings.ToLower(strings.Replace(creatematchMsg.PlayerA, "0x", "0x000000000000000000000000", 1))
+	playerA, err := txbuilder.StringToSlice(creatematchMsg.PlayerA)
 	if err != nil {
 		value := fmt.Errorf("error parsing params for create match")
 		logger.LogDebug(fmt.Sprintf("[backend] error creating transaction to create match: %s", value))
 		return newCreateMatchMessageError(value), value
 	}
 
-	playerB, err := txbuilder.StringToSlice(strings.Replace(creatematchMsg.PlayerB, "0x", "0x000000000000000000000000", 1))
+	creatematchMsg.PlayerB = strings.ToLower(strings.Replace(creatematchMsg.PlayerB, "0x", "0x000000000000000000000000", 1))
+	playerB, err := txbuilder.StringToSlice(creatematchMsg.PlayerB)
 	if err != nil {
 		value := fmt.Errorf("error parsing params for create match")
 		logger.LogDebug(fmt.Sprintf("[backend] error creating transaction to create match: %s", value))
 		return newCreateMatchMessageError(value), value
 	}
 
-	_, err = b.txBuilder.InteractWithContract(ws.WalletID, "CreateMatch", playerA, playerB)
+	prediction := garnethelpers.NewPrediction(b.db)
+	prediction.CreateMatch(creatematchMsg.PlayerA, creatematchMsg.PlayerB)
+
+	txhash, err := b.txBuilder.InteractWithContract(ws.WalletID, "CreateMatch", playerA, playerB)
 	if err != nil {
 		value := fmt.Errorf("error sending creatematch tx")
 		return newCreateMatchMessageError(value), value
 	}
+
+	b.db.AddTxSent(data.UnconfirmedTransaction{
+		Txhash: txhash.Hex(),
+		Events: prediction.Events,
+	})
 
 	return newCreateMatchMessageResponse(), nil
 }

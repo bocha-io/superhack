@@ -17,5 +17,3 @@ function monKey(bytes32 playerKey, uint8 ID) pure returns (bytes32) {
     }
     return bytes32(playerKey);
 }
-
-// monKey := strings.Replace(playerKey, "0x000000000000000000000000", "0x310000000000000000000000", 1)
