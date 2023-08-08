@@ -119,6 +119,7 @@ func (b *Backend) HandleMessage(
 		} else {
 			// TODO: remove websocket from list when connection is closed
 			b.wsList[ws.WalletAddress] = ws
+			b.broadcastPositions()
 		}
 
 	case MoveMessageType:
@@ -131,6 +132,17 @@ func (b *Backend) HandleMessage(
 			b.broadcastPositions()
 			return nil
 		}
+
+	case CreateMatchMessageType:
+		if response, err := b.createMatchMessage(ws, p); err != nil {
+			return err
+		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+			return err
+		} else {
+			// Broadcast match id
+			return nil
+		}
+
 	}
 
 	return nil
