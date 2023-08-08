@@ -76,19 +76,27 @@ func (b *Backend) createMatchMessage(
 	}
 
 	// We get the wallet address, so we need to add the padding to the ids
-	creatematchMsg.PlayerA = strings.ToLower(strings.Replace(creatematchMsg.PlayerA, "0x", "0x000000000000000000000000", 1))
+	creatematchMsg.PlayerA = strings.ToLower(
+		strings.Replace(creatematchMsg.PlayerA, "0x", "0x000000000000000000000000", 1),
+	)
 	playerA, err := txbuilder.StringToSlice(creatematchMsg.PlayerA)
 	if err != nil {
 		value := fmt.Errorf("error parsing params for create match")
-		logger.LogDebug(fmt.Sprintf("[backend] error creating transaction to create match: %s", value))
+		logger.LogDebug(
+			fmt.Sprintf("[backend] error creating transaction to create match: %s", value),
+		)
 		return newCreateMatchMessageError(value), value
 	}
 
-	creatematchMsg.PlayerB = strings.ToLower(strings.Replace(creatematchMsg.PlayerB, "0x", "0x000000000000000000000000", 1))
+	creatematchMsg.PlayerB = strings.ToLower(
+		strings.Replace(creatematchMsg.PlayerB, "0x", "0x000000000000000000000000", 1),
+	)
 	playerB, err := txbuilder.StringToSlice(creatematchMsg.PlayerB)
 	if err != nil {
 		value := fmt.Errorf("error parsing params for create match")
-		logger.LogDebug(fmt.Sprintf("[backend] error creating transaction to create match: %s", value))
+		logger.LogDebug(
+			fmt.Sprintf("[backend] error creating transaction to create match: %s", value),
+		)
 		return newCreateMatchMessageError(value), value
 	}
 
