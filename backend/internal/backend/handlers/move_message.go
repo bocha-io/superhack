@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/bocha-io/game-backend/x/messages"
+	"github.com/bocha-io/garnet/x/indexer/data"
+	"github.com/bocha-io/superhack/internal/garnethelpers"
 )
 
 type MoveMessage struct {
@@ -48,23 +50,41 @@ func newMoveMessageResponse() MoveMessageResponse {
 	}
 }
 
-func (b *Backend) moveMessage(ws *messages.WebSocketContainer, p []byte) (MoveMessageResponse, error) {
+func (b *Backend) moveMessage(
+	ws *messages.WebSocketContainer,
+	p []byte,
+) (resp MoveMessageResponse, err error) {
+	// The prediction will panic if something fails in the database, catch it here
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("error getting info from the database")
+			resp = MoveMessageResponse{}
+		}
+	}()
+
 	if !ws.Authenticated {
 		return MoveMessageResponse{}, fmt.Errorf("user is not logged in")
 	}
 
 	var moveMsg MoveMessage
-	err := json.Unmarshal(p, &moveMsg)
+	err = json.Unmarshal(p, &moveMsg)
 	if err != nil {
 		return newMoveMessageError(err), err
 	}
 
-	// TODO: autogenerate predictions and call it here!
-	_, err = b.txBuilder.InteractWithContract(ws.WalletID, "move", moveMsg.X, moveMsg.Y)
+	prediction := garnethelpers.NewPrediction(b.db)
+	prediction.Move(int64(moveMsg.X), int64(moveMsg.Y), ws.WalletAddress)
+
+	txhash, err := b.txBuilder.InteractWithContract(ws.WalletID, "Move", moveMsg.X, moveMsg.Y)
 	if err != nil {
 		value := fmt.Errorf("error sending move tx")
 		return newMoveMessageError(value), value
 	}
+
+	b.db.AddTxSent(data.UnconfirmedTransaction{
+		Txhash: txhash.Hex(),
+		Events: prediction.Events,
+	})
 
 	return newMoveMessageResponse(), nil
 }

@@ -4,6 +4,7 @@ run:
   concurrency: 4
   skip-dirs:
     - x/indexer/data/mudhelpers/*
+    - internal/garnethelpers/*
 
 linters:
   enable:
