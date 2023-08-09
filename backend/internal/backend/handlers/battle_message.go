@@ -22,7 +22,7 @@ type BattleMessage struct {
 
 type BattleMessageResponse struct {
 	MsgType string `json:"msgtype"`
-	Value   bool   `json:"value"`
+	Value   Match  `json:"value"`
 	Error   string `json:"error"`
 }
 
@@ -51,15 +51,15 @@ func NewBattleMessage(
 func newBattleMessageError(err error) BattleMessageResponse {
 	return BattleMessageResponse{
 		MsgType: BattleMessageResponseID,
-		Value:   false,
+		Value:   Match{},
 		Error:   err.Error(),
 	}
 }
 
-func newBattleMessageResponse() BattleMessageResponse {
+func newBattleMessageResponse(match Match) BattleMessageResponse {
 	return BattleMessageResponse{
 		MsgType: BattleMessageResponseID,
-		Value:   true,
+		Value:   match,
 		Error:   "",
 	}
 }
@@ -123,5 +123,11 @@ func (b *Backend) battleMessage(
 		Events: prediction.Events,
 	})
 
-	return newBattleMessageResponse(), nil
+	return newBattleMessageResponse(
+		Match{
+			MatchID:   battleMsg.MatchID,
+			PlayerOne: prediction.PlayerOneGet(battleMsg.MatchID),
+			PlayerTwo: prediction.PlayerTwoGet(battleMsg.MatchID),
+		},
+	), nil
 }

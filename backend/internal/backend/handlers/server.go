@@ -3,6 +3,7 @@ package handlers
 import (
 	"crypto/ecdsa"
 	"fmt"
+	"strings"
 
 	"github.com/bocha-io/game-backend/x/messages"
 	"github.com/bocha-io/garnet/x/indexer/data"
@@ -40,20 +41,6 @@ func NewBackend(
 		20000000,
 		pk,
 	)
-
-	// TODO: move this function to another place and only send coins if they are needed
-	// Send coins to 10 accounts
-	i := 0
-	for i <= 10 {
-		_, errFaucet := txBuilder.FoundAccount(i)
-		logger.LogInfo(fmt.Sprintf("[backend] sending coins to wallet: %d", i))
-		if errFaucet != nil {
-			logger.LogError(
-				fmt.Sprintf("[backend] error sending coins to wallet %d, %s", i, errFaucet.Error()),
-			)
-		}
-		i++
-	}
 
 	b := &Backend{
 		mnemonic:  userMnemonics,
@@ -103,6 +90,75 @@ func (b *Backend) broadcastPositions() {
 	}
 }
 
+type Mon struct {
+	MonID   string `json:"id"`
+	MonHP   int64  `json:"hp"`
+	MonType int64  `json:"montype"`
+}
+
+type Mons struct {
+	First  Mon `json:"first"`
+	Second Mon `json:"second"`
+	Third  Mon `json:"third"`
+}
+
+type Battle struct {
+	MsgType   string `json:"msgtype"`
+	PlayerOne string `json:"playerone"`
+	PlayerTwo string `json:"playertwo"`
+	MatchID   string `json:"matchid"`
+
+	PlayerOneMons       Mons   `json:"playeronemons"`
+	PlayerTwoMons       Mons   `json:"playertwomons"`
+	PlayerOneCurrentMon string `json:"playeronecurrentmon"`
+	PlayerTwoCurrentMon string `json:"playertwocurrentmon"`
+}
+
+func (b *Backend) broadcastMatchState(matchID string, playerA string, playerB string) {
+	res := Battle{MsgType: "battlestatus", PlayerOne: playerA, PlayerTwo: playerB, MatchID: matchID}
+
+	playerAKey := strings.ToLower(
+		strings.Replace(playerA, "0x", "0x000000000000000000000000", 1),
+	)
+	res.PlayerOneMons.First.MonID, _ = b.queryClient.GetPlayerFirstMon(playerAKey)
+	res.PlayerOneMons.First.MonHP, _ = b.queryClient.GetMonHp(res.PlayerOneMons.First.MonID)
+	res.PlayerOneMons.First.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerOneMons.First.MonID)
+
+	res.PlayerOneMons.Second.MonID, _ = b.queryClient.GetPlayerSecondMon(playerAKey)
+	res.PlayerOneMons.Second.MonHP, _ = b.queryClient.GetMonHp(res.PlayerOneMons.Second.MonID)
+	res.PlayerOneMons.Second.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerOneMons.Second.MonID)
+
+	res.PlayerOneMons.Third.MonID, _ = b.queryClient.GetPlayerThirdMon(playerAKey)
+	res.PlayerOneMons.Third.MonHP, _ = b.queryClient.GetMonHp(res.PlayerOneMons.Third.MonID)
+	res.PlayerOneMons.Third.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerOneMons.Third.MonID)
+
+	res.PlayerOneCurrentMon, _ = b.queryClient.GetPlayerOneCurrentMon(playerAKey)
+
+	playerBKey := strings.ToLower(
+		strings.Replace(playerB, "0x", "0x000000000000000000000000", 1),
+	)
+	res.PlayerTwoMons.First.MonID, _ = b.queryClient.GetPlayerFirstMon(playerBKey)
+	res.PlayerTwoMons.First.MonHP, _ = b.queryClient.GetMonHp(res.PlayerTwoMons.First.MonID)
+	res.PlayerTwoMons.First.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerTwoMons.First.MonID)
+
+	res.PlayerTwoMons.Second.MonID, _ = b.queryClient.GetPlayerSecondMon(playerBKey)
+	res.PlayerTwoMons.Second.MonHP, _ = b.queryClient.GetMonHp(res.PlayerTwoMons.Second.MonID)
+	res.PlayerTwoMons.Second.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerTwoMons.Second.MonID)
+
+	res.PlayerTwoMons.Third.MonID, _ = b.queryClient.GetPlayerThirdMon(playerBKey)
+	res.PlayerTwoMons.Third.MonHP, _ = b.queryClient.GetMonHp(res.PlayerTwoMons.Third.MonID)
+	res.PlayerTwoMons.Third.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerTwoMons.Third.MonID)
+
+	res.PlayerTwoCurrentMon, _ = b.queryClient.GetPlayerTwoCurrentMon(playerBKey)
+
+	for _, v := range b.wsList {
+		logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", v.WalletAddress))
+		if v.Conn != nil {
+			_ = messages.WriteJSON(v.Conn, v.ConnMutex, res)
+		}
+	}
+}
+
 func (b *Backend) HandleMessage(
 	g *messages.Server,
 	ws *messages.WebSocketContainer,
@@ -139,7 +195,6 @@ func (b *Backend) HandleMessage(
 		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
 			return err
 		} else {
-			// Broadcast match id
 			return nil
 		}
 
@@ -149,7 +204,9 @@ func (b *Backend) HandleMessage(
 		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
 			return err
 		} else {
-			// Broadcast game updated status
+			// TODO: only send the information to the player one and two
+			// TODO: send an actions report, ie, p1 attacked, p2 swapped
+			b.broadcastMatchState(response.Value.MatchID, response.Value.PlayerOne, response.Value.PlayerTwo)
 			return nil
 		}
 

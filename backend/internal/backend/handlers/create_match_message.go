@@ -18,9 +18,15 @@ type CreateMatchMessage struct {
 	PlayerB string `json:"playerb"`
 }
 
+type Match struct {
+	MatchID   string `json:"id"`
+	PlayerOne string `json:"playerone"`
+	PlayerTwo string `json:"playertwo"`
+}
+
 type CreateMatchMessageResponse struct {
 	MsgType string `json:"msgtype"`
-	Value   bool   `json:"value"`
+	Value   Match  `json:"value"`
 	Error   string `json:"error"`
 }
 
@@ -40,15 +46,15 @@ func NewCreateMatchMessage(playerA string, playerB string) CreateMatchMessage {
 func newCreateMatchMessageError(err error) CreateMatchMessageResponse {
 	return CreateMatchMessageResponse{
 		MsgType: CreateMatchMessageResponseID,
-		Value:   false,
+		Value:   Match{},
 		Error:   err.Error(),
 	}
 }
 
-func newCreateMatchMessageResponse() CreateMatchMessageResponse {
+func newCreateMatchMessageResponse(match Match) CreateMatchMessageResponse {
 	return CreateMatchMessageResponse{
 		MsgType: CreateMatchMessageResponseID,
-		Value:   true,
+		Value:   match,
 		Error:   "",
 	}
 }
@@ -76,6 +82,7 @@ func (b *Backend) createMatchMessage(
 	}
 
 	// We get the wallet address, so we need to add the padding to the ids
+	walletA := creatematchMsg.PlayerA
 	creatematchMsg.PlayerA = strings.ToLower(
 		strings.Replace(creatematchMsg.PlayerA, "0x", "0x000000000000000000000000", 1),
 	)
@@ -88,6 +95,7 @@ func (b *Backend) createMatchMessage(
 		return newCreateMatchMessageError(value), value
 	}
 
+	walletB := creatematchMsg.PlayerB
 	creatematchMsg.PlayerB = strings.ToLower(
 		strings.Replace(creatematchMsg.PlayerB, "0x", "0x000000000000000000000000", 1),
 	)
@@ -114,5 +122,20 @@ func (b *Backend) createMatchMessage(
 		Events: prediction.Events,
 	})
 
-	return newCreateMatchMessageResponse(), nil
+	matchID := ""
+	for _, v := range prediction.Events {
+		if v.Table == "Match" {
+			if len(v.Fields) > 0 {
+				matchID = strings.ReplaceAll(v.Fields[0].Data.String(), "\"", "")
+			}
+		}
+	}
+
+	return newCreateMatchMessageResponse(
+		Match{
+			MatchID:   matchID,
+			PlayerOne: walletA,
+			PlayerTwo: walletB,
+		},
+	), nil
 }
