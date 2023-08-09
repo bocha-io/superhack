@@ -88,6 +88,25 @@ func DeleteMatchEvent(ID string) data.MudEvent {
 	}
 }
 
+func CreateMatchResultEvent(ID string, winner string, loser string) data.MudEvent {
+	return data.MudEvent{
+		Table: "MatchResult",
+		Key:   ID,
+		Fields: []data.Field{
+			{Key: "winner", Data: data.NewBytesField(BytesEventFromString(winner))},
+			{Key: "loser", Data: data.NewBytesField(BytesEventFromString(loser))},
+		},
+	}
+}
+
+func DeleteMatchResultEvent(ID string) data.MudEvent {
+	return data.MudEvent{
+		Table:  "MatchResult",
+		Key:    ID,
+		Fields: []data.Field{},
+	}
+}
+
 func CreatePlayerOneEvent(ID string, value string) data.MudEvent {
 	return data.MudEvent{
 		Table: "PlayerOne",

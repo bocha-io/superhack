@@ -30,7 +30,13 @@ func (p *Prediction) attack(attackingMon string, attackedMon string, pos int64) 
 	}
 }
 
-func (p *Prediction) bothAttacks(monOne string, monTwo string, posOne int64, posTwo int64) {
+func (p *Prediction) fight(
+	matchID string,
+	monOne string,
+	monTwo string,
+	posOne int64,
+	posTwo int64,
+) bool {
 	playerOneSpeed := int64(0)
 	speedMonPlayerOne, _ := p.getMonSpeedAndType(p.MonSpecieGet(monOne))
 	atkSpeedMonOne, _, _ := p.getAttack(p.MonSpecieGet(monOne), posOne)
@@ -40,14 +46,59 @@ func (p *Prediction) bothAttacks(monOne string, monTwo string, posOne int64, pos
 	atkSpeedMonTwo, _, _ := p.getAttack(p.MonSpecieGet(monTwo), posTwo)
 	playerTwoSpeed = speedMonPlayerTwo + atkSpeedMonTwo
 	if playerOneSpeed >= playerTwoSpeed {
-		if p.attack(monOne, monTwo, posOne) > int64(0) {
-			p.attack(monTwo, monOne, posTwo)
+		if p.attack(monOne, monTwo, posOne) == int64(0) {
+			if p.checkIfGameHasEnded(p.PlayerTwoGet(matchID), monTwo) {
+				p.endGame(matchID, p.PlayerOneGet(matchID), p.PlayerTwoGet(matchID))
+				return true
+			}
+		} else {
+			if p.attack(monTwo, monOne, posTwo) == int64(0) {
+				if p.checkIfGameHasEnded(p.PlayerOneGet(matchID), monOne) {
+					p.endGame(matchID, p.PlayerTwoGet(matchID), p.PlayerOneGet(matchID))
+					return true
+				}
+			}
 		}
 	} else {
-		if p.attack(monTwo, monOne, posTwo) > int64(0) {
-			p.attack(monOne, monTwo, posOne)
+		if p.attack(monTwo, monOne, posTwo) == int64(0) {
+			if p.checkIfGameHasEnded(p.PlayerOneGet(matchID), monOne) {
+				p.endGame(matchID, p.PlayerTwoGet(matchID), p.PlayerOneGet(matchID))
+				return true
+			}
+		} else {
+			if p.attack(monOne, monTwo, posOne) == int64(0) {
+				if p.checkIfGameHasEnded(p.PlayerTwoGet(matchID), monTwo) {
+					p.endGame(matchID, p.PlayerOneGet(matchID), p.PlayerTwoGet(matchID))
+					return true
+				}
+			}
 		}
 	}
+	return false
+}
+
+func (p *Prediction) checkIfGameHasEnded(playerID string, monDead string) bool {
+	res := int64(0)
+	firstMon := p.PlayerFirstMonGet(playerID)
+	if firstMon != monDead {
+		res = res + p.MonHpGet(firstMon)
+	}
+	secondMon := p.PlayerSecondMonGet(playerID)
+	if secondMon != monDead {
+		res = res + p.MonHpGet(secondMon)
+	}
+	thirdMon := p.PlayerThirdMonGet(playerID)
+	if thirdMon != monDead {
+		res = res + p.MonHpGet(thirdMon)
+	}
+	return res != int64(0)
+}
+
+func (p *Prediction) endGame(matchID string, winner string, loser string) {
+	p.MatchDeleterecord(matchID)
+	p.PlayerOneDeleterecord(matchID)
+	p.PlayerTwoDeleterecord(matchID)
+	p.MatchResultSet(matchID, winner, loser)
 }
 
 func (p *Prediction) Battle(
@@ -74,15 +125,35 @@ func (p *Prediction) Battle(
 		p2Mon = p.getPlayerFightingMon(p.PlayerTwoGet(matchID), posTwo)
 		p.PlayerTwoCurrentMonSet(matchID, p2Mon)
 	}
+	if p.MonHpGet(p1Mon) == int64(0) {
+		p.endGame(matchID, p.PlayerTwoGet(matchID), p.PlayerOneGet(matchID))
+		return
+	} else {
+		if p.MonHpGet(p2Mon) == int64(0) {
+			p.endGame(matchID, p.PlayerOneGet(matchID), p.PlayerTwoGet(matchID))
+		}
+	}
 	if !p1Executed {
 		if !p2Executed {
-			p.bothAttacks(p1Mon, p2Mon, posOne, posTwo)
+			if p.fight(matchID, p1Mon, p2Mon, posOne, posTwo) {
+				return
+			}
 		} else {
-			p.attack(p1Mon, p2Mon, posOne)
+			if p.attack(p1Mon, p2Mon, posOne) == int64(0) {
+				if p.checkIfGameHasEnded(p.PlayerTwoGet(matchID), p2Mon) {
+					p.endGame(matchID, p.PlayerOneGet(matchID), p.PlayerTwoGet(matchID))
+					return
+				}
+			}
 		}
 	} else {
 		if p2Executed == false {
-			p.attack(p2Mon, p1Mon, posTwo)
+			if p.attack(p2Mon, p1Mon, posTwo) == int64(0) {
+				if p.checkIfGameHasEnded(p.PlayerOneGet(matchID), p1Mon) {
+					p.endGame(matchID, p.PlayerTwoGet(matchID), p.PlayerOneGet(matchID))
+					return
+				}
+			}
 		}
 	}
 }
