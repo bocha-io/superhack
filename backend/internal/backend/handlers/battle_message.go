@@ -20,9 +20,22 @@ type BattleMessage struct {
 	PlayerTwoActionPos uint8  `json:"playertwoactionpos"`
 }
 
+type Actions struct {
+	PlayerOneSwapped bool     `json:"playeroneswapped"`
+	PlayerTwoSwapped bool     `json:"playertwoswapped"`
+	DamagedUnits     []string `json:"damagedunits"`
+	PlayerOneAttack  int8     `json:"playeroneattack"`
+	PlayerTwoAttack  int8     `json:"playertwoattack"`
+}
+
+type Values struct {
+	Match   Match   `json:"match"`
+	Actions Actions `json:"actions"`
+}
+
 type BattleMessageResponse struct {
 	MsgType string `json:"msgtype"`
-	Value   bool   `json:"value"`
+	Value   Values `json:"value"`
 	Error   string `json:"error"`
 }
 
@@ -51,15 +64,15 @@ func NewBattleMessage(
 func newBattleMessageError(err error) BattleMessageResponse {
 	return BattleMessageResponse{
 		MsgType: BattleMessageResponseID,
-		Value:   false,
+		Value:   Values{},
 		Error:   err.Error(),
 	}
 }
 
-func newBattleMessageResponse() BattleMessageResponse {
+func newBattleMessageResponse(values Values) BattleMessageResponse {
 	return BattleMessageResponse{
 		MsgType: BattleMessageResponseID,
-		Value:   true,
+		Value:   values,
 		Error:   "",
 	}
 }
@@ -123,5 +136,44 @@ func (b *Backend) battleMessage(
 		Events: prediction.Events,
 	})
 
-	return newBattleMessageResponse(), nil
+	playerOneSwapped := false
+	playerTwoSwapped := false
+	damaged := []string{}
+	for _, v := range prediction.Events {
+		if v.Table == "PlayerOneCurrentMon" {
+			playerOneSwapped = true
+		}
+		if v.Table == "PlayerTwoCurrentMon" {
+			playerTwoSwapped = true
+		}
+		if v.Table == "MonHp" {
+			damaged = append(damaged, v.Key)
+		}
+	}
+	playerOneAttack := int8(-1)
+	playerTwoAttack := int8(-1)
+	if !playerOneSwapped {
+		playerOneAttack = int8(battleMsg.PlayerOneAction)
+	}
+
+	if !playerTwoSwapped {
+		playerTwoAttack = int8(battleMsg.PlayerTwoAction)
+	}
+
+	return newBattleMessageResponse(
+		Values{
+			Match: Match{
+				MatchID:   battleMsg.MatchID,
+				PlayerOne: prediction.PlayerOneGet(battleMsg.MatchID),
+				PlayerTwo: prediction.PlayerTwoGet(battleMsg.MatchID),
+			},
+			Actions: Actions{
+				PlayerOneSwapped: playerOneSwapped,
+				PlayerTwoSwapped: playerTwoSwapped,
+				DamagedUnits:     damaged,
+				PlayerOneAttack:  playerOneAttack,
+				PlayerTwoAttack:  playerTwoAttack,
+			},
+		},
+	), nil
 }
