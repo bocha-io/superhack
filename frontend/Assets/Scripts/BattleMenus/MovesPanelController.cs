@@ -5,6 +5,7 @@ using UnityEngine;
 public class MovesPanelController : OptionsController
 {
 
+
     public override void Select(){
         for (int i=0; i< options.Count; i++){
             ((FightOption)options[i]).Select(i==selected);

@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Bochamon : MonoBehaviour
 {
+    public string uuid;
     public List<Moves> moves;
-    public Sprite image;
+    public Sprite sprite;
     public string bochaName;
-    public string bochaType;
+    public BochaType bochaType;
     public int maxHp;
     public int currentHp;
     public int speed;

@@ -5,7 +5,7 @@ using UnityEngine;
 public class OptionsController : MonoBehaviour
 {
     public List<MenuOption> options;
-    public int selected;
+    public int selected, previouslySelected;
     public bool canGoBack;
     [SerializeField] BottomPanelController _parentPanel;
     
@@ -13,6 +13,9 @@ public class OptionsController : MonoBehaviour
         
     }
 
+    public void OnEnable(){
+        Select();
+    }
 
     public void GoBack(){
         if(canGoBack){
@@ -21,6 +24,7 @@ public class OptionsController : MonoBehaviour
     }
 
     public void Update(){
+        previouslySelected = selected;
         if(Input.GetKeyDown(KeyCode.D)){
             if (selected < options.Count - 1){
                 selected++;
@@ -49,8 +53,8 @@ public class OptionsController : MonoBehaviour
             if (canGoBack)
                 GoBack();
         }
-
-        Select();
+        if (previouslySelected != selected)
+            Select();
     }
 
     public virtual void Select(){

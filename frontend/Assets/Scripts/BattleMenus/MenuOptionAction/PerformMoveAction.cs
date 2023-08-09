@@ -5,8 +5,9 @@ using UnityEngine;
 public class PerformMoveAction : MenuOptionAction
 {
     [SerializeField] BattleMaster _battleMaster;
+    public int number;
     public override void Execute(){
         // _battleMaster.
-        Debug.Log("Send Action");
+        Debug.Log("Send Action " + number);
     }
 }

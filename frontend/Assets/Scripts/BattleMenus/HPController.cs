@@ -43,7 +43,6 @@ public class HPController : MonoBehaviour
         if (_currentHp < 0){
             _currentHp = 0;
         }
-        // _mainCamera.DOShakePosition(0.2f, fadeOut:true);
         SetHp(_currentHp);
     }
 
