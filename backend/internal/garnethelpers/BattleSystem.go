@@ -50,7 +50,13 @@ func (p *Prediction) bothAttacks(monOne string, monTwo string, posOne int64, pos
 	}
 }
 
-func (p *Prediction) Battle(matchID string, playerOneAction int64, posOne int64, playerTwoAction int64, posTwo int64) {
+func (p *Prediction) Battle(
+	matchID string,
+	playerOneAction int64,
+	posOne int64,
+	playerTwoAction int64,
+	posTwo int64,
+) {
 	if !(p.MatchGet(matchID)) {
 		panic("match is not created")
 	}

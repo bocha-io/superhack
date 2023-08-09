@@ -143,6 +143,16 @@ func (b *Backend) HandleMessage(
 			return nil
 		}
 
+	case BattleMessageType:
+		if response, err := b.battleMessage(ws, p); err != nil {
+			return err
+		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+			return err
+		} else {
+			// Broadcast game updated status
+			return nil
+		}
+
 	}
 
 	return nil

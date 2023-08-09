@@ -23,7 +23,8 @@ type InMemoryDatabase struct {
 }
 
 func NewInMemoryDatabase(txBuilder *txbuilder.TxBuilder) *InMemoryDatabase {
-	users := &map[string]User{}
+	InitDatabase(txBuilder)
+	users := InitUsersMap()
 	return &InMemoryDatabase{
 		Users:      users,
 		mu:         &sync.Mutex{},
@@ -60,6 +61,8 @@ func (db *InMemoryDatabase) RegisterUser(
 		Index:    index,
 		Address:  account.Address.Hex(),
 	}
+
+	InsertUser(username, hashedPassword, account.Address.Hex(), index)
 
 	return index, account.Address.Hex(), nil
 }
