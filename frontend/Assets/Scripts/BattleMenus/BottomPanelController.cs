@@ -21,12 +21,18 @@ public class BottomPanelController : MonoBehaviour
     [SerializeField] BochamonUI _myBochamon;
     [SerializeField] BochamonUI _enemyBochamon;
 
+    [SerializeField] SpriteRenderer _myBochamonSprite;
+    [SerializeField] SpriteRenderer _enemyBochamonSprite;
+
     public PanelState currentState;
 
-    public void InitialSetup(){
+    public void InitialSetup(Player me, Bochamon _enemy){
         // Setup Actions?
         // Setup Moves
         // Setup bochamons
+        SetupPlayer(me);
+        SetupMyBochamon(me.bochamons[0]);
+        SetupEnemyBochamon(_enemy);
     }
 
     public void SetupPlayer(Player player){    
@@ -37,12 +43,14 @@ public class BottomPanelController : MonoBehaviour
         // Setup UI
         _myBochamon.Setup(bochi);
         _fightMenu.Setup(bochi.moves);
+        _myBochamonSprite.sprite = bochi.sprite;
         // Setup Moves 
     }
 
     public void SetupEnemyBochamon(Bochamon bochi){
         // Setup UI
         _enemyBochamon.Setup(bochi);
+        _enemyBochamonSprite.sprite = bochi.sprite;
     }
 
     public void ApplyDamageOnSelf(int damage){

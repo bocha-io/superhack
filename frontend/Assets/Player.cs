@@ -5,6 +5,6 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public List<Bochamon> bochamons;
-
+    public string id;
     
 }

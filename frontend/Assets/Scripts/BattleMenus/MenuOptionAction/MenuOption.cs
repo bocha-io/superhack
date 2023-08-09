@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using DG.Tweening;
 public class MenuOption : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _name;
     public string menuName;
     public bool active;
 
-    [SerializeField] Image _selection;
+    [SerializeField] protected Image _selection;
     [SerializeField] MenuOptionAction _action;
 
 
@@ -24,5 +24,12 @@ public class MenuOption : MonoBehaviour
 
     public virtual void Select(bool s){
         _selection.gameObject.SetActive(s);
+        if (s) {
+            transform.localScale = new Vector3 (0.8f, 0.9f, 1);
+            transform.DOScale(new Vector3(1,1,1), 0.1f);
+            _name.color = Color.white;
+        }
+        
+        else _name.color = Color.black;
     }
 }
