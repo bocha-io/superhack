@@ -7,7 +7,7 @@ import (
 	"github.com/bocha-io/logger"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
 
-	_ "github.com/mattn/go-sqlite3" 
+	_ "github.com/mattn/go-sqlite3"
 )
 
 const dbPath string = "users.sql"

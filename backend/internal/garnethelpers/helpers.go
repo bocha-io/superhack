@@ -37,7 +37,7 @@ func (p *Prediction) PlayerSet(ID string, value bool) {
 	p.Events = append(p.Events, CreatePlayerEvent(ID, value))
 }
 
-func (p *Prediction) PlayerDeleteRecord(ID string) {
+func (p *Prediction) PlayerDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerEvent(ID))
 }
 
@@ -63,7 +63,7 @@ func (p *Prediction) StatusSet(ID string, value int64) {
 	p.Events = append(p.Events, CreateStatusEvent(ID, value))
 }
 
-func (p *Prediction) StatusDeleteRecord(ID string) {
+func (p *Prediction) StatusDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteStatusEvent(ID))
 }
 
@@ -89,7 +89,7 @@ func (p *Prediction) PositionSet(ID string, x int64, y int64) {
 	p.Events = append(p.Events, CreatePositionEvent(ID, x, y))
 }
 
-func (p *Prediction) PositionDeleteRecord(ID string) {
+func (p *Prediction) PositionDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePositionEvent(ID))
 }
 
@@ -115,7 +115,7 @@ func (p *Prediction) MatchSet(ID string, value bool) {
 	p.Events = append(p.Events, CreateMatchEvent(ID, value))
 }
 
-func (p *Prediction) MatchDeleteRecord(ID string) {
+func (p *Prediction) MatchDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteMatchEvent(ID))
 }
 
@@ -124,6 +124,32 @@ func (p *Prediction) MatchKeys(value bool) []string {
 		panic("game object is not active")
 	}
 	return p.blockchainConnection.GetRowsMatch(value)
+}
+
+func (p *Prediction) MatchResultGet(key string) (string, string) {
+	if !p.blockchainConnection.active {
+		panic("game object is not active")
+	}
+	field0, field1, err := p.blockchainConnection.GetMatchResult(key)
+	if err != nil {
+		panic("value not found")
+	}
+	return field0, field1
+}
+
+func (p *Prediction) MatchResultSet(ID string, winner string, loser string) {
+	p.Events = append(p.Events, CreateMatchResultEvent(ID, winner, loser))
+}
+
+func (p *Prediction) MatchResultDeleterecord(ID string) {
+	p.Events = append(p.Events, DeleteMatchResultEvent(ID))
+}
+
+func (p *Prediction) MatchResultKeys(winner string, loser string) []string {
+	if !p.blockchainConnection.active {
+		panic("game object is not active")
+	}
+	return p.blockchainConnection.GetRowsMatchResult(winner, loser)
 }
 
 func (p *Prediction) PlayerOneGet(key string) string {
@@ -141,7 +167,7 @@ func (p *Prediction) PlayerOneSet(ID string, value string) {
 	p.Events = append(p.Events, CreatePlayerOneEvent(ID, value))
 }
 
-func (p *Prediction) PlayerOneDeleteRecord(ID string) {
+func (p *Prediction) PlayerOneDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerOneEvent(ID))
 }
 
@@ -167,7 +193,7 @@ func (p *Prediction) PlayerTwoSet(ID string, value string) {
 	p.Events = append(p.Events, CreatePlayerTwoEvent(ID, value))
 }
 
-func (p *Prediction) PlayerTwoDeleteRecord(ID string) {
+func (p *Prediction) PlayerTwoDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerTwoEvent(ID))
 }
 
@@ -193,7 +219,7 @@ func (p *Prediction) PlayerOneCurrentMonSet(ID string, value string) {
 	p.Events = append(p.Events, CreatePlayerOneCurrentMonEvent(ID, value))
 }
 
-func (p *Prediction) PlayerOneCurrentMonDeleteRecord(ID string) {
+func (p *Prediction) PlayerOneCurrentMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerOneCurrentMonEvent(ID))
 }
 
@@ -219,7 +245,7 @@ func (p *Prediction) PlayerTwoCurrentMonSet(ID string, value string) {
 	p.Events = append(p.Events, CreatePlayerTwoCurrentMonEvent(ID, value))
 }
 
-func (p *Prediction) PlayerTwoCurrentMonDeleteRecord(ID string) {
+func (p *Prediction) PlayerTwoCurrentMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerTwoCurrentMonEvent(ID))
 }
 
@@ -245,7 +271,7 @@ func (p *Prediction) PlayerFirstMonSet(ID string, value string) {
 	p.Events = append(p.Events, CreatePlayerFirstMonEvent(ID, value))
 }
 
-func (p *Prediction) PlayerFirstMonDeleteRecord(ID string) {
+func (p *Prediction) PlayerFirstMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerFirstMonEvent(ID))
 }
 
@@ -271,7 +297,7 @@ func (p *Prediction) PlayerSecondMonSet(ID string, value string) {
 	p.Events = append(p.Events, CreatePlayerSecondMonEvent(ID, value))
 }
 
-func (p *Prediction) PlayerSecondMonDeleteRecord(ID string) {
+func (p *Prediction) PlayerSecondMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerSecondMonEvent(ID))
 }
 
@@ -297,7 +323,7 @@ func (p *Prediction) PlayerThirdMonSet(ID string, value string) {
 	p.Events = append(p.Events, CreatePlayerThirdMonEvent(ID, value))
 }
 
-func (p *Prediction) PlayerThirdMonDeleteRecord(ID string) {
+func (p *Prediction) PlayerThirdMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeletePlayerThirdMonEvent(ID))
 }
 
@@ -323,7 +349,7 @@ func (p *Prediction) MonSet(ID string, value bool) {
 	p.Events = append(p.Events, CreateMonEvent(ID, value))
 }
 
-func (p *Prediction) MonDeleteRecord(ID string) {
+func (p *Prediction) MonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteMonEvent(ID))
 }
 
@@ -349,7 +375,7 @@ func (p *Prediction) MonSpecieSet(ID string, value int64) {
 	p.Events = append(p.Events, CreateMonSpecieEvent(ID, value))
 }
 
-func (p *Prediction) MonSpecieDeleteRecord(ID string) {
+func (p *Prediction) MonSpecieDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteMonSpecieEvent(ID))
 }
 
@@ -375,7 +401,7 @@ func (p *Prediction) MonHpSet(ID string, value int64) {
 	p.Events = append(p.Events, CreateMonHpEvent(ID, value))
 }
 
-func (p *Prediction) MonHpDeleteRecord(ID string) {
+func (p *Prediction) MonHpDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteMonHpEvent(ID))
 }
 
@@ -401,7 +427,7 @@ func (p *Prediction) InventoryFirstMonSet(ID string, value int64) {
 	p.Events = append(p.Events, CreateInventoryFirstMonEvent(ID, value))
 }
 
-func (p *Prediction) InventoryFirstMonDeleteRecord(ID string) {
+func (p *Prediction) InventoryFirstMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteInventoryFirstMonEvent(ID))
 }
 
@@ -427,7 +453,7 @@ func (p *Prediction) InventorySecondMonSet(ID string, value int64) {
 	p.Events = append(p.Events, CreateInventorySecondMonEvent(ID, value))
 }
 
-func (p *Prediction) InventorySecondMonDeleteRecord(ID string) {
+func (p *Prediction) InventorySecondMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteInventorySecondMonEvent(ID))
 }
 
@@ -453,7 +479,7 @@ func (p *Prediction) InventoryThirdMonSet(ID string, value int64) {
 	p.Events = append(p.Events, CreateInventoryThirdMonEvent(ID, value))
 }
 
-func (p *Prediction) InventoryThirdMonDeleteRecord(ID string) {
+func (p *Prediction) InventoryThirdMonDeleterecord(ID string) {
 	p.Events = append(p.Events, DeleteInventoryThirdMonEvent(ID))
 }
 

@@ -6,6 +6,7 @@ import {System} from "@latticexyz/world/src/System.sol";
 
 // Battle
 import {Match} from "../codegen/tables/Match.sol";
+import {MatchResult} from "../codegen/tables/MatchResult.sol";
 import {PlayerOne} from "../codegen/tables/PlayerOne.sol";
 import {PlayerTwo} from "../codegen/tables/PlayerTwo.sol";
 
@@ -54,7 +55,10 @@ contract BattleSystem is System {
         }
     }
 
-    function bothAttacks(bytes32 monOne, bytes32 monTwo, uint8 posOne, uint8 posTwo) internal {
+    function fight(bytes32 matchID, bytes32 monOne, bytes32 monTwo, uint8 posOne, uint8 posTwo)
+        internal
+        returns (bool)
+    {
         // PlayerOne stats
         int32 playerOneSpeed = 0;
         {
@@ -71,16 +75,84 @@ contract BattleSystem is System {
         }
 
         if (playerOneSpeed >= playerTwoSpeed) {
-            // Check if the mon is dead after attack
-            if (attack(monOne, monTwo, posOne) > 0) {
-                attack(monTwo, monOne, posTwo);
+            // Player one goes first
+            if (attack(monOne, monTwo, posOne) == 0) {
+                // Check if it was the last mon
+                if (checkIfGameHasEnded(PlayerTwo.get(matchID), monTwo)) {
+                    // Surrender game for player two
+                    endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+                    return true;
+                }
+            } else {
+                // The player two mon is alive
+                if (attack(monTwo, monOne, posTwo) == 0) {
+                    // Check if it was the last mon
+                    if (checkIfGameHasEnded(PlayerOne.get(matchID), monOne)) {
+                        // Surrender game for player one
+                        endGame(matchID, PlayerTwo.get(matchID), PlayerOne.get(matchID));
+                        return true;
+                    }
+                }
             }
         } else {
-            // Check if the mon is dead after attack
-            if (attack(monTwo, monOne, posTwo) > 0) {
-                attack(monOne, monTwo, posOne);
+            // Player two goes first
+            if (attack(monTwo, monOne, posTwo) == 0) {
+                // Check if it was the last mon
+                if (checkIfGameHasEnded(PlayerOne.get(matchID), monOne)) {
+                    // Surrender game for player one
+                    endGame(matchID, PlayerTwo.get(matchID), PlayerOne.get(matchID));
+                    return true;
+                }
+            } else {
+                // Player one mon is alive
+                if (attack(monOne, monTwo, posOne) == 0) {
+                    // Check if it was the last mon
+                    if (checkIfGameHasEnded(PlayerTwo.get(matchID), monTwo)) {
+                        // Surrender game for player two
+                        endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+                        return true;
+                    }
+                }
             }
         }
+
+        // Game continues
+        return false;
+    }
+
+    // We need pass the mon that was dead to be supported by the golang predictions.
+    // Currently there is no support to read stores updated in the same transaction
+    function checkIfGameHasEnded(bytes32 playerID, bytes32 monDead) internal view returns (bool) {
+        int32 res = 0;
+        {
+            bytes32 firstMon = PlayerFirstMon.get(playerID);
+            if (firstMon != monDead) {
+                res = res + MonHp.get(firstMon);
+            }
+        }
+
+        {
+            bytes32 secondMon = PlayerSecondMon.get(playerID);
+            if (secondMon != monDead) {
+                res = res + MonHp.get(secondMon);
+            }
+        }
+
+        {
+            bytes32 thirdMon = PlayerThirdMon.get(playerID);
+            if (thirdMon != monDead) {
+                res = res + MonHp.get(thirdMon);
+            }
+        }
+
+        return res != 0;
+    }
+
+    function endGame(bytes32 matchID, bytes32 winner, bytes32 loser) internal {
+        Match.deleteRecord(matchID);
+        PlayerOne.deleteRecord(matchID);
+        PlayerTwo.deleteRecord(matchID);
+        MatchResult.set(matchID, winner, loser);
     }
 
     function Battle(bytes32 matchID, ActionType playerOneAction, uint8 posOne, ActionType playerTwoAction, uint8 posTwo)
@@ -109,19 +181,43 @@ contract BattleSystem is System {
             PlayerTwoCurrentMon.set(matchID, p2Mon);
         }
 
+        // If the user want to send an action with a dead mon, assume surrender
+        if (MonHp.get(p1Mon) == 0) {
+            // Surrender player one
+            endGame(matchID, PlayerTwo.get(matchID), PlayerOne.get(matchID));
+            return;
+        } else if (MonHp.get(p2Mon) == 0) {
+            // Surrender player two
+            endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+        }
+
         if (!p1Executed) {
             if (!p2Executed) {
-                // Check velocity
-                bothAttacks(p1Mon, p2Mon, posOne, posTwo);
+                // fight returns true if the game ended
+                if (fight(matchID, p1Mon, p2Mon, posOne, posTwo)) {
+                    return;
+                }
             } else {
                 // Attack with p1
-                attack(p1Mon, p2Mon, posOne);
+                if (attack(p1Mon, p2Mon, posOne) == 0) {
+                    // Check if player two lost the game
+                    if (checkIfGameHasEnded(PlayerTwo.get(matchID), p2Mon)) {
+                        // Surrender game for player two
+                        endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+                        return;
+                    }
+                }
             }
         } else if (p2Executed == false) {
             // Attack with p2
-            attack(p2Mon, p1Mon, posTwo);
+            if (attack(p2Mon, p1Mon, posTwo) == 0) {
+                // Check if player one lost the game
+                if (checkIfGameHasEnded(PlayerOne.get(matchID), p1Mon)) {
+                    // Surrender game for player one
+                    endGame(matchID, PlayerTwo.get(matchID), PlayerOne.get(matchID));
+                    return;
+                }
+            }
         }
-
-        // TODO: check for gameover
     }
 }
