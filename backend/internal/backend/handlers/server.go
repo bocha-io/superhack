@@ -108,14 +108,27 @@ type Battle struct {
 	PlayerTwo string `json:"playertwo"`
 	MatchID   string `json:"matchid"`
 
+	Actions Actions `json:"actions"`
+
 	PlayerOneMons       Mons   `json:"playeronemons"`
 	PlayerTwoMons       Mons   `json:"playertwomons"`
 	PlayerOneCurrentMon string `json:"playeronecurrentmon"`
 	PlayerTwoCurrentMon string `json:"playertwocurrentmon"`
 }
 
-func (b *Backend) broadcastMatchState(matchID string, playerA string, playerB string) {
-	res := Battle{MsgType: "battlestatus", PlayerOne: playerA, PlayerTwo: playerB, MatchID: matchID}
+func (b *Backend) broadcastMatchState(
+	matchID string,
+	playerA string,
+	playerB string,
+	actions Actions,
+) {
+	res := Battle{
+		MsgType:   "battlestatus",
+		PlayerOne: playerA,
+		PlayerTwo: playerB,
+		MatchID:   matchID,
+		Actions:   actions,
+	}
 
 	playerAKey := strings.ToLower(
 		strings.Replace(playerA, "0x", "0x000000000000000000000000", 1),
@@ -151,10 +164,12 @@ func (b *Backend) broadcastMatchState(matchID string, playerA string, playerB st
 
 	res.PlayerTwoCurrentMon, _ = b.queryClient.GetPlayerTwoCurrentMon(playerBKey)
 
-	for _, v := range b.wsList {
-		logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", v.WalletAddress))
-		if v.Conn != nil {
-			_ = messages.WriteJSON(v.Conn, v.ConnMutex, res)
+	for k, v := range b.wsList {
+		if k == playerA || k == playerB {
+			logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", v.WalletAddress))
+			if v.Conn != nil {
+				_ = messages.WriteJSON(v.Conn, v.ConnMutex, res)
+			}
 		}
 	}
 }
@@ -206,7 +221,7 @@ func (b *Backend) HandleMessage(
 		} else {
 			// TODO: only send the information to the player one and two
 			// TODO: send an actions report, ie, p1 attacked, p2 swapped
-			b.broadcastMatchState(response.Value.MatchID, response.Value.PlayerOne, response.Value.PlayerTwo)
+			b.broadcastMatchState(response.Value.Match.MatchID, response.Value.Match.PlayerOne, response.Value.Match.PlayerTwo, response.Value.Actions)
 			return nil
 		}
 
