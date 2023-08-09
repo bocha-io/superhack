@@ -4,16 +4,11 @@ pragma solidity >=0.8.0;
 // Core
 import {System} from "@latticexyz/world/src/System.sol";
 
-// Player options
-import {Player} from "../codegen/tables/Player.sol";
-import {Status} from "../codegen/tables/Status.sol";
-
 // Battle
 import {Match} from "../codegen/tables/Match.sol";
 import {PlayerOne} from "../codegen/tables/PlayerOne.sol";
 import {PlayerTwo} from "../codegen/tables/PlayerTwo.sol";
 
-import {Mon} from "../codegen/tables/Mon.sol";
 import {MonSpecie} from "../codegen/tables/MonSpecie.sol";
 import {MonHp} from "../codegen/tables/MonHp.sol";
 
@@ -24,14 +19,8 @@ import {PlayerFirstMon} from "../codegen/tables/PlayerFirstMon.sol";
 import {PlayerSecondMon} from "../codegen/tables/PlayerSecondMon.sol";
 import {PlayerThirdMon} from "../codegen/tables/PlayerThirdMon.sol";
 
-// Inventory
-import {InventoryFirstMon} from "../codegen/tables/InventoryFirstMon.sol";
-import {InventorySecondMon} from "../codegen/tables/InventorySecondMon.sol";
-import {InventoryThirdMon} from "../codegen/tables/InventoryThirdMon.sol";
-
 // Libs
-import {StatusType, MonType, ActionType, ElementType} from "../codegen/Types.sol";
-import {monKey} from "../addressToEntityKey.sol";
+import {ActionType, ElementType} from "../codegen/Types.sol";
 import {LibDefaults} from "../libs/LibDefaults.sol";
 
 contract BattleSystem is System {
@@ -49,7 +38,7 @@ contract BattleSystem is System {
         return bytes32(0);
     }
 
-    function Attack(bytes32 attackingMon, bytes32 attackedMon, uint8 pos) internal returns (int32) {
+    function attack(bytes32 attackingMon, bytes32 attackedMon, uint8 pos) internal returns (int32) {
         (int32 atkDmg,, ElementType atkElement) = LibDefaults.getAttack(MonSpecie.get(attackingMon), pos);
         (, ElementType attackedMonElement) = LibDefaults.getMonSpeedAndType(MonSpecie.get(attackedMon));
 
@@ -65,31 +54,31 @@ contract BattleSystem is System {
         }
     }
 
-    function BothAttacks(bytes32 monOne, bytes32 monTwo, uint8 posOne, uint8 posTwo) internal {
+    function bothAttacks(bytes32 monOne, bytes32 monTwo, uint8 posOne, uint8 posTwo) internal {
         // PlayerOne stats
         int32 playerOneSpeed = 0;
         {
             (int32 speedMonPlayerOne,) = LibDefaults.getMonSpeedAndType(MonSpecie.get(monOne));
-            (int32 atkSpeed,,) = LibDefaults.getAttack(MonSpecie.get(monOne), posOne);
-            playerOneSpeed = speedMonPlayerOne + atkSpeed;
+            (int32 atkSpeedMonOne,,) = LibDefaults.getAttack(MonSpecie.get(monOne), posOne);
+            playerOneSpeed = speedMonPlayerOne + atkSpeedMonOne;
         }
 
         int32 playerTwoSpeed = 0;
         {
             (int32 speedMonPlayerTwo,) = LibDefaults.getMonSpeedAndType(MonSpecie.get(monTwo));
-            (int32 atkSpeed,,) = LibDefaults.getAttack(MonSpecie.get(monTwo), posTwo);
-            playerTwoSpeed = speedMonPlayerTwo + atkSpeed;
+            (int32 atkSpeedMonTwo,,) = LibDefaults.getAttack(MonSpecie.get(monTwo), posTwo);
+            playerTwoSpeed = speedMonPlayerTwo + atkSpeedMonTwo;
         }
 
         if (playerOneSpeed >= playerTwoSpeed) {
             // Check if the mon is dead after attack
-            if (Attack(monOne, monTwo, posOne) > 0) {
-                Attack(monTwo, monOne, posTwo);
+            if (attack(monOne, monTwo, posOne) > 0) {
+                attack(monTwo, monOne, posTwo);
             }
         } else {
             // Check if the mon is dead after attack
-            if (Attack(monTwo, monOne, posTwo) > 0) {
-                Attack(monOne, monTwo, posOne);
+            if (attack(monTwo, monOne, posTwo) > 0) {
+                attack(monOne, monTwo, posOne);
             }
         }
     }
@@ -123,14 +112,14 @@ contract BattleSystem is System {
         if (!p1Executed) {
             if (!p2Executed) {
                 // Check velocity
-                BothAttacks(p1Mon, p2Mon, posOne, posTwo);
+                bothAttacks(p1Mon, p2Mon, posOne, posTwo);
             } else {
                 // Attack with p1
-                Attack(p1Mon, p2Mon, posOne);
+                attack(p1Mon, p2Mon, posOne);
             }
         } else if (p2Executed == false) {
             // Attack with p2
-            Attack(p2Mon, p1Mon, posTwo);
+            attack(p2Mon, p1Mon, posTwo);
         }
 
         // TODO: check for gameover
