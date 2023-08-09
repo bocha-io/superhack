@@ -6,9 +6,9 @@ func (p *Prediction) register(senderAddress string) {
 		panic("wallet already registered")
 	}
 	p.PlayerSet(senderKey, true)
-	p.InventoryFirstMonSet(senderKey, Hanchon)
-	p.InventorySecondMonSet(senderKey, Renzok)
-	p.InventoryThirdMonSet(senderKey, Ramon)
+	p.InventoryFirstMonSet(senderKey, Flarezael)
+	p.InventorySecondMonSet(senderKey, Baobaffe)
+	p.InventoryThirdMonSet(senderKey, Tobishimi)
 	p.PositionSet(senderKey, int64(0), int64(0))
 	p.StatusSet(senderKey, Walking)
 }

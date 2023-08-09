@@ -7,6 +7,8 @@ require (
 	github.com/bocha-io/garnet v0.0.0-20230803210649-f44e3aac728b
 	github.com/bocha-io/logger v0.0.0-20230722133508-fbef5d720b58
 	github.com/bocha-io/txbuilder v0.0.0-20230803210905-a74441e74ede
+	github.com/ethereum/go-ethereum v1.12.0
+	github.com/mattn/go-sqlite3 v1.11.0
 	golang.org/x/crypto v0.12.0
 )
 
@@ -18,7 +20,6 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce // indirect
 	github.com/deckarep/golang-set/v2 v2.1.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
-	github.com/ethereum/go-ethereum v1.12.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-ole/go-ole v1.2.1 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect

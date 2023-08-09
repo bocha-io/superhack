@@ -33,8 +33,39 @@ export default mudConfig({
     InventoryThirdMon: "MonType",
   },
   enums: {
-    MonType: ["Ramon", "Renzok", "Hanchon"],
+    MonType: [
+      "Cobarett",
+      "Flarezael",
+      "Firomenis",
+      "Baobaffe",
+      "Howliage",
+      "Sunnydra",
+      "Tobishimi",
+      "Mobiusk",
+      "Ramon",
+    ],
     StatusType: ["Walking", "Fighting"],
+    ActionType: ["Attack", "Swap"],
+    ElementType: ["Fire", "Water", "Grass", "Normal"],
+    AttackType: [
+      // Fire
+      "LavaPlume",
+      "FireLash",
+      "FieryDance",
+      // Grass
+      "LeafTornado",
+      "RazorLeaf",
+      "SolarBlade",
+      // Water
+      "AquaTail",
+      "BubbleBeam",
+      "HydroVortex",
+      // Normal
+      "Bite",
+      "Tackle",
+      "CrushGrip",
+      "Flail",
+    ],
   },
   modules: [],
 });

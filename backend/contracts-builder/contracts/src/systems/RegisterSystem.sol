@@ -24,9 +24,9 @@ contract RegisterSystem is System {
         Player.set(senderKey, true);
 
         // Init the inventary
-        InventoryFirstMon.set(senderKey, MonType.Hanchon);
-        InventorySecondMon.set(senderKey, MonType.Renzok);
-        InventoryThirdMon.set(senderKey, MonType.Ramon);
+        InventoryFirstMon.set(senderKey, MonType.Flarezael);
+        InventorySecondMon.set(senderKey, MonType.Baobaffe);
+        InventoryThirdMon.set(senderKey, MonType.Tobishimi);
 
         // Set initial position
         Position.set(senderKey, 0, 0);
