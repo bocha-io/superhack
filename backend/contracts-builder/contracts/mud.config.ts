@@ -15,6 +15,14 @@ export default mudConfig({
     },
 
     Match: "bool",
+    MatchResult: {
+      dataStruct: false,
+      schema: {
+        winner: "bytes32",
+        loser: "bytes32",
+      },
+    },
+
     PlayerOne: "bytes32",
     PlayerTwo: "bytes32",
     PlayerOneCurrentMon: "bytes32",
