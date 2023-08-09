@@ -219,8 +219,6 @@ func (b *Backend) HandleMessage(
 		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
 			return err
 		} else {
-			// TODO: only send the information to the player one and two
-			// TODO: send an actions report, ie, p1 attacked, p2 swapped
 			b.broadcastMatchState(response.Value.Match.MatchID, response.Value.Match.PlayerOne, response.Value.Match.PlayerTwo, response.Value.Actions)
 			return nil
 		}
