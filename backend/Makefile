@@ -9,6 +9,9 @@ lint:
 fix-lines:
 	@golines -w .
 
+clean:
+	@rm users.sql indexerlogs.log
+
 run-localnet:
 	@source /opt/homebrew/opt/nvm/nvm.sh && nvm use v18.12.0 && cd contracts-builder/contracts && pnpm run devnode
 

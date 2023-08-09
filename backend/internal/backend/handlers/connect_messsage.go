@@ -17,7 +17,7 @@ type ConnectMessage struct {
 
 type ConnectMessageResponse struct {
 	MsgType string `json:"msgtype"`
-	Value   bool   `json:"value"`
+	Value   string `json:"value"`
 	Error   string `json:"error"`
 }
 
@@ -37,15 +37,15 @@ func NewConnectMessage(user string, password string) ConnectMessage {
 func newConnectMessageError(err error) ConnectMessageResponse {
 	return ConnectMessageResponse{
 		MsgType: ConnectMessageResponseID,
-		Value:   false,
+		Value:   "",
 		Error:   err.Error(),
 	}
 }
 
-func newConnectMessageResponse() ConnectMessageResponse {
+func newConnectMessageResponse(wallet string) ConnectMessageResponse {
 	return ConnectMessageResponse{
 		MsgType: ConnectMessageResponseID,
-		Value:   true,
+		Value:   wallet,
 		Error:   "",
 	}
 }
@@ -114,5 +114,5 @@ func (b *Backend) connectMessage(
 	ws.WalletAddress = strings.ToLower(user.Address)
 
 	logger.LogInfo(fmt.Sprintf("[backend] user connected: %s (%s)", ws.User, ws.WalletAddress))
-	return newConnectMessageResponse(), nil
+	return newConnectMessageResponse(ws.WalletAddress), nil
 }

@@ -46,7 +46,7 @@ contract CreateMatchSystem is System {
             return InventoryThirdMon.get(player);
         }
         require(false, "invalid pos");
-        return MonType.Hanchon;
+        return MonType.Ramon;
     }
 
     function setPlayerCurrentMon(bytes32 gameKey, uint8 player, bytes32 monID) internal {

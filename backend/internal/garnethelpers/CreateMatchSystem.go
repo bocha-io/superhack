@@ -13,7 +13,7 @@ func (p *Prediction) getMonFromInventory(player string, pos int64) int64 {
 	if !(false) {
 		panic("invalid pos")
 	}
-	return Hanchon
+	return Ramon
 }
 
 func (p *Prediction) setPlayerCurrentMon(gameKey string, player int64, monID string) {

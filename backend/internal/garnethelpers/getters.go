@@ -183,6 +183,49 @@ func (g GameObject) GetRowsMatch(arg0 bool) []string {
 	return []string{}
 }
 
+func (g *GameObject) ProcessFieldsMatchResult(fields []data.Field) (string, string, error) {
+	if len(fields) != 2 {
+		return "", "", fmt.Errorf("invalid amount of fields")
+	}
+
+	field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+	field1 := strings.ReplaceAll(fields[1].Data.String(), "\"", "")
+	return field0, field1, nil
+}
+
+func (g *GameObject) GetMatchResult(key string) (string, string, error) {
+	fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "MatchResult")
+	if err != nil {
+		return "", "", err
+	}
+	return g.ProcessFieldsMatchResult(fields)
+}
+
+func (g GameObject) GetAllRowsMatchResult() map[string][]data.Field {
+	table := g.world.GetTableByName("MatchResult")
+	return g.db.GetRows(table)
+}
+
+func (g GameObject) GetRowsMatchResult(arg0 string, arg1 string) []string {
+	rows := g.GetAllRowsMatchResult()
+	for k, fields := range rows {
+		if len(fields) != 2 {
+			continue
+		}
+
+		field0 := strings.ReplaceAll(fields[0].Data.String(), "\"", "")
+		if field0 != arg0 {
+			continue
+		}
+		field1 := strings.ReplaceAll(fields[1].Data.String(), "\"", "")
+		if field1 != arg1 {
+			continue
+		}
+		return []string{k}
+	}
+	return []string{}
+}
+
 func (g *GameObject) ProcessFieldsPlayerOne(fields []data.Field) (string, error) {
 	if len(fields) != 1 {
 		return "", fmt.Errorf("invalid amount of fields")
