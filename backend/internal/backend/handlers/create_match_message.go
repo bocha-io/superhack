@@ -125,11 +125,10 @@ func (b *Backend) createMatchMessage(
 	matchID := ""
 	for _, v := range prediction.Events {
 		if v.Table == "Match" {
-			if len(v.Fields) > 0 {
-				matchID = strings.ReplaceAll(v.Fields[0].Data.String(), "\"", "")
-			}
+			matchID = v.Key
 		}
 	}
+	logger.LogInfo(fmt.Sprintf("[backend] match created with id %s", matchID))
 
 	return newCreateMatchMessageResponse(
 		Match{
