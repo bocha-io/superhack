@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -66,24 +67,24 @@ func (ga *GameAdmins) SetBackend(b *Backend) {
 func (ga *GameAdmins) AddMatchRequest(playerA string, playerB string) {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	if _, ok := ga.MatchRequests[playerA]; ok {
-		ga.MatchRequests[playerA] = playerB
+	if _, ok := ga.MatchRequests[strings.ToLower(playerA)]; ok {
+		ga.MatchRequests[strings.ToLower(playerA)] = strings.ToLower(playerB)
 		return
 	}
 
-	ga.MatchRequests[playerA] = playerB
+	ga.MatchRequests[strings.ToLower(playerA)] = strings.ToLower(playerB)
 }
 
 func (ga *GameAdmins) AcceptMatchRequest(playerA string) {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	delete(ga.MatchRequests, playerA)
+	delete(ga.MatchRequests, strings.ToLower(playerA))
 }
 
 func (ga GameAdmins) GetMatchRequest(playerA string) (string, error) {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	if v, ok := ga.MatchRequests[playerA]; ok {
+	if v, ok := ga.MatchRequests[strings.ToLower(playerA)]; ok {
 		return v, nil
 	}
 	return "", fmt.Errorf("not found")
@@ -107,28 +108,28 @@ const (
 func (ga *GameAdmins) AddAdmin(matchID string, playerA string, playerB string) error {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	if _, ok := ga.Admins[matchID]; ok {
+	if _, ok := ga.Admins[strings.ToLower(matchID)]; ok {
 		return fmt.Errorf("match already has an admin")
 	}
-	ga.Admins[matchID] = NewGameAdmin(matchID, playerA, playerB, ga.backend)
+	ga.Admins[strings.ToLower(matchID)] = NewGameAdmin(strings.ToLower(matchID), strings.ToLower(playerA), strings.ToLower(playerB), ga.backend)
 	return nil
 }
 
 func (ga *GameAdmins) RemoveAdmin(matchID string) error {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	if _, ok := ga.Admins[matchID]; !ok {
+	if _, ok := ga.Admins[strings.ToLower(matchID)]; !ok {
 		return fmt.Errorf("already removed")
 	}
-	delete(ga.Admins, matchID)
+	delete(ga.Admins, strings.ToLower(matchID))
 	return nil
 }
 
 func (ga *GameAdmins) AddAction(matchID, player string, action uint8, pos uint8) error {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	if _, ok := ga.Admins[matchID]; ok {
-		return ga.Admins[matchID].AddAction(player, action, pos)
+	if _, ok := ga.Admins[strings.ToLower(matchID)]; ok {
+		return ga.Admins[strings.ToLower(matchID)].AddAction(strings.ToLower(player), action, pos)
 	}
 	return fmt.Errorf("the match is not active")
 }
@@ -151,7 +152,7 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
-	if g.PlayerA.PlayerID == player {
+	if g.PlayerA.PlayerID == strings.ToLower(player) {
 		if g.PlayerA.Set {
 			return fmt.Errorf("the action for this turn is already set")
 		}
@@ -165,7 +166,7 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 		g.PlayerA.ActionType = action
 		g.PlayerA.Pos = pos
 
-	} else if g.PlayerB.PlayerID == player {
+	} else if g.PlayerB.PlayerID == strings.ToLower(player) {
 		if g.PlayerB.Set {
 			return fmt.Errorf("the action for this turn is already set")
 		}

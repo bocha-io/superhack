@@ -32,13 +32,13 @@ type Backend struct {
 func (b *Backend) AddWebSocket(wallet string, conex *messages.WebSocketContainer) {
 	b.muList.Lock()
 	defer b.muList.Unlock()
-	b.wsList[wallet] = conex
+	b.wsList[strings.ToLower(wallet)] = conex
 }
 
 func (b *Backend) RemoveWebSocket(wallet string) {
 	b.muList.Lock()
 	defer b.muList.Unlock()
-	delete(b.wsList, wallet)
+	delete(b.wsList, strings.ToLower(wallet))
 }
 
 func (b *Backend) Broadcast(callback func(conex *messages.WebSocketContainer)) {
@@ -52,7 +52,7 @@ func (b *Backend) Broadcast(callback func(conex *messages.WebSocketContainer)) {
 func (b *Backend) GetConex(wallet string) *messages.WebSocketContainer {
 	b.muList.Lock()
 	defer b.muList.Unlock()
-	if v, ok := b.wsList[wallet]; ok {
+	if v, ok := b.wsList[strings.ToLower(wallet)]; ok {
 		return v
 	}
 	return nil
@@ -255,19 +255,23 @@ func (b *Backend) HandleMessage(
 		if response, err := b.duelRequestMessage(ws, p); err != nil {
 			return err
 		} else {
+			logger.LogDebug(fmt.Sprintf("[backend] duel request looking for enemy: %s", response.Value.PlayerB))
 			enemy := b.GetConex(response.Value.PlayerB)
 			if enemy != nil {
+				logger.LogDebug(fmt.Sprintf("[backend] duel request enemy found: %s", response.Value.PlayerB))
 				// Send duel request to the player B
 				_ = messages.WriteJSON(enemy.Conn, enemy.ConnMutex, response)
 
 				// Add this match to the pending duel list
 				b.gameAdmins.AddMatchRequest(response.Value.PlayerA, response.Value.PlayerB)
+				logger.LogInfo(fmt.Sprintf("[backend] adding match %s vs %s", response.Value.PlayerA, response.Value.PlayerB))
 
 				// Inform that the request was sent
 				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
 					return err
 				}
 			} else {
+				logger.LogDebug(fmt.Sprintf("[backend] duel request enemy NOT found: %s!!!!", response.Value.PlayerB))
 				// Inform that the enemy is not connected
 				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelRequestMessageError(fmt.Errorf("player b is not connected"))); err != nil {
 					return err
@@ -281,11 +285,15 @@ func (b *Backend) HandleMessage(
 		} else {
 			if player, err := b.gameAdmins.GetMatchRequest(response.Value.PlayerA); err == nil {
 				if player == response.Value.PlayerB {
-					pA := b.GetConex(response.Value.PlayerA)
-					pB := b.GetConex(response.Value.PlayerB)
 					b.gameAdmins.AcceptMatchRequest(response.Value.PlayerA)
-					_ = messages.WriteJSON(pA.Conn, pA.ConnMutex, response)
-					_ = messages.WriteJSON(pB.Conn, pB.ConnMutex, response)
+					pA := b.GetConex(response.Value.PlayerA)
+					if pA != nil {
+						_ = messages.WriteJSON(pA.Conn, pA.ConnMutex, response)
+					}
+					pB := b.GetConex(response.Value.PlayerB)
+					if pB != nil {
+						_ = messages.WriteJSON(pB.Conn, pB.ConnMutex, response)
+					}
 
 					// Create a match
 					msg := NewCreateMatchMessage(response.Value.PlayerA, response.Value.PlayerB)
@@ -293,8 +301,12 @@ func (b *Backend) HandleMessage(
 
 					if response, err := b.createMatchMessage(ws, bMsg); err != nil {
 						// TODO, maybe return something different
-						_ = messages.WriteJSON(pA.Conn, pA.ConnMutex, response)
-						_ = messages.WriteJSON(pB.Conn, pB.ConnMutex, response)
+						if pA != nil {
+							_ = messages.WriteJSON(pA.Conn, pA.ConnMutex, response)
+						}
+						if pB != nil {
+							_ = messages.WriteJSON(pB.Conn, pB.ConnMutex, response)
+						}
 					} else {
 						// Game created
 						_ = b.gameAdmins.AddAdmin(response.Value.MatchID, response.Value.PlayerOne, response.Value.PlayerTwo)
