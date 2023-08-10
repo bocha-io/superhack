@@ -307,9 +307,11 @@ func (b *Backend) HandleMessage(
 						if pB != nil {
 							_ = messages.WriteJSON(pB.Conn, pB.ConnMutex, response)
 						}
+						return nil
 					} else {
 						// Game created
 						_ = b.gameAdmins.AddAdmin(response.Value.MatchID, response.Value.PlayerOne, response.Value.PlayerTwo)
+						return nil
 					}
 				}
 				return fmt.Errorf("invalid player")

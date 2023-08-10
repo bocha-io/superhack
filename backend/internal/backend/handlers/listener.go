@@ -116,7 +116,8 @@ func (ga *GameAdmins) AddAdmin(matchID string, playerA string, playerB string) e
 			playerB,
 		),
 	)
-	if _, ok := ga.Admins[strings.ToLower(matchID)]; ok {
+	if v, ok := ga.Admins[strings.ToLower(matchID)]; ok {
+		logger.LogDebug(fmt.Sprintf("[backend] game admin NOT created %v %v", v, ok))
 		return fmt.Errorf("match already has an admin")
 	}
 	ga.Admins[strings.ToLower(matchID)] = NewGameAdmin(
@@ -125,24 +126,24 @@ func (ga *GameAdmins) AddAdmin(matchID string, playerA string, playerB string) e
 		strings.ToLower(playerB),
 		ga.backend,
 	)
+	logger.LogDebug("[backend] game admin created")
 	return nil
 }
 
 func (ga *GameAdmins) RemoveAdmin(matchID string) error {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	if _, ok := ga.Admins[strings.ToLower(matchID)]; !ok {
-		return fmt.Errorf("already removed")
-	}
 	delete(ga.Admins, strings.ToLower(matchID))
 	return nil
 }
 
-func (ga *GameAdmins) AddAction(matchID, player string, action uint8, pos uint8) error {
+func (ga *GameAdmins) AddAction(matchID string, player string, action uint8, pos uint8) error {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	if _, ok := ga.Admins[strings.ToLower(matchID)]; ok {
-		return ga.Admins[strings.ToLower(matchID)].AddAction(strings.ToLower(player), action, pos)
+
+	logger.LogDebug(fmt.Sprintf("[ADD ACTION ADMINS] %v, matchID: %s", ga.Admins, strings.ToLower(matchID)))
+	if admin, ok := ga.Admins[strings.ToLower(matchID)]; ok {
+		return admin.AddAction(strings.ToLower(player), action, pos)
 	}
 	return fmt.Errorf("the match is not active")
 }
@@ -165,6 +166,8 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
+	logger.LogDebug(fmt.Sprintf("[GAMEADMIN] adding action p %s, a %d pos %d, %v", strings.ToLower(player), action, pos, g))
+
 	if g.PlayerA.PlayerID == strings.ToLower(player) {
 		if g.PlayerA.Set {
 			return fmt.Errorf("the action for this turn is already set")
@@ -178,6 +181,7 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 		g.PlayerA.Set = true
 		g.PlayerA.ActionType = action
 		g.PlayerA.Pos = pos
+		logger.LogDebug(fmt.Sprintf("[GAMEADMIN] is player one %s %s", strings.ToLower(player), g.PlayerA.PlayerID))
 
 	} else if g.PlayerB.PlayerID == strings.ToLower(player) {
 		if g.PlayerB.Set {
@@ -192,13 +196,19 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 		g.PlayerB.Set = true
 		g.PlayerB.ActionType = action
 		g.PlayerB.Pos = pos
+		logger.LogDebug(fmt.Sprintf("[GAMEADMIN] is player two %s %s", strings.ToLower(player), g.PlayerB.PlayerID))
+	} else {
+		return fmt.Errorf("invalid player ID")
 	}
+
+	logger.LogDebug(fmt.Sprintf("[GAMEADMIN] action status %v", g))
 
 	if g.PlayerA.Set && g.PlayerB.Set {
 		_ = g.ExecuteAction()
 	}
 
-	return fmt.Errorf("invalid player ID")
+	return nil
+
 }
 
 func (g *GameAdmin) ExecuteAction() error {
