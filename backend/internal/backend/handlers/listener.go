@@ -108,7 +108,14 @@ const (
 func (ga *GameAdmins) AddAdmin(matchID string, playerA string, playerB string) error {
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
-	logger.LogDebug(fmt.Sprintf("[backend] adding admin for match %s, playerA %s, playerB %s", matchID, playerA, playerB))
+	logger.LogDebug(
+		fmt.Sprintf(
+			"[backend] adding admin for match %s, playerA %s, playerB %s",
+			matchID,
+			playerA,
+			playerB,
+		),
+	)
 	if _, ok := ga.Admins[strings.ToLower(matchID)]; ok {
 		return fmt.Errorf("match already has an admin")
 	}

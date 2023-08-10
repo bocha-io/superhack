@@ -167,6 +167,18 @@ contract BattleSystem is System {
         bool p2Executed = false;
         bytes32 p2Mon = PlayerTwoCurrentMon.get(matchID);
 
+        // Handle surrender cases
+        if (playerOneAction == ActionType.Surrender) {
+            endGame(matchID, PlayerTwo.get(matchID), PlayerOne.get(matchID));
+            return;
+        }
+
+        if (playerTwoAction == ActionType.Surrender) {
+            endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+            return;
+        }
+
+        // Handle Swaps
         if (playerOneAction == ActionType.Swap) {
             p1Executed = true;
             // Do Swap
@@ -189,8 +201,10 @@ contract BattleSystem is System {
         } else if (MonHp.get(p2Mon) == 0) {
             // Surrender player two
             endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+            return;
         }
 
+        // Handle Attacks
         if (!p1Executed) {
             if (!p2Executed) {
                 // fight returns true if the game ended

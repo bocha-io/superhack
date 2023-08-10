@@ -115,6 +115,14 @@ func (p *Prediction) Battle(
 	p1Mon := p.PlayerOneCurrentMonGet(matchID)
 	p2Executed := false
 	p2Mon := p.PlayerTwoCurrentMonGet(matchID)
+	if playerOneAction == Surrender {
+		p.endGame(matchID, p.PlayerTwoGet(matchID), p.PlayerOneGet(matchID))
+		return
+	}
+	if playerTwoAction == Surrender {
+		p.endGame(matchID, p.PlayerOneGet(matchID), p.PlayerTwoGet(matchID))
+		return
+	}
 	if playerOneAction == Swap {
 		p1Executed = true
 		p1Mon = p.getPlayerFightingMon(p.PlayerOneGet(matchID), posOne)
@@ -131,6 +139,7 @@ func (p *Prediction) Battle(
 	} else {
 		if p.MonHpGet(p2Mon) == int64(0) {
 			p.endGame(matchID, p.PlayerOneGet(matchID), p.PlayerTwoGet(matchID))
+			return
 		}
 	}
 	if !p1Executed {

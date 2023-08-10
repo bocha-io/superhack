@@ -20,6 +20,7 @@ const (
 const (
 	Attack = iota
 	Swap
+	Surrender
 )
 
 const (
