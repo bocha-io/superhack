@@ -27,6 +27,7 @@ type Actions struct {
 	DamagedUnits     []string `json:"damagedunits"`
 	PlayerOneAttack  int8     `json:"playeroneattack"`
 	PlayerTwoAttack  int8     `json:"playertwoattack"`
+	Winner           string   `json:"winner"`
 }
 
 type Values struct {

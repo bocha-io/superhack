@@ -244,6 +244,7 @@ func (g *GameAdmin) ExecuteAction() error {
 	playerOneSwapped := false
 	playerTwoSwapped := false
 	damaged := []string{}
+	winner := ""
 	for _, v := range prediction.Events {
 		if v.Table == "PlayerOneCurrentMon" {
 			playerOneSwapped = true
@@ -254,7 +255,13 @@ func (g *GameAdmin) ExecuteAction() error {
 		if v.Table == "MonHp" {
 			damaged = append(damaged, v.Key)
 		}
+		if v.Table == "MatchResult" {
+			if len(v.Fields) == 2 {
+				winner = strings.ReplaceAll(v.Fields[0].Data.String(), "\"", "")
+			}
+		}
 	}
+
 	playerOneAttack := int8(-1)
 	playerTwoAttack := int8(-1)
 	if !playerOneSwapped {
@@ -272,6 +279,7 @@ func (g *GameAdmin) ExecuteAction() error {
 		DamagedUnits:     damaged,
 		PlayerOneAttack:  playerOneAttack,
 		PlayerTwoAttack:  playerTwoAttack,
+		Winner:           winner,
 	}
 
 	g.backend.broadcastMatchState(g.MatchID, g.PlayerA.PlayerID, g.PlayerB.PlayerID, actions)
@@ -283,6 +291,9 @@ func (g *GameAdmin) ExecuteAction() error {
 	g.PlayerB.Set = false
 	g.PlayerB.ActionType = 0
 	g.TimeStart = time.Now()
+	if winner != "" {
+		g.Active = false
+	}
 	return nil
 }
 
