@@ -141,7 +141,9 @@ func (ga *GameAdmins) AddAction(matchID string, player string, action uint8, pos
 	ga.mu.Lock()
 	defer ga.mu.Unlock()
 
-	logger.LogDebug(fmt.Sprintf("[ADD ACTION ADMINS] %v, matchID: %s", ga.Admins, strings.ToLower(matchID)))
+	logger.LogDebug(
+		fmt.Sprintf("[ADD ACTION ADMINS] %v, matchID: %s", ga.Admins, strings.ToLower(matchID)),
+	)
 	if admin, ok := ga.Admins[strings.ToLower(matchID)]; ok {
 		return admin.AddAction(strings.ToLower(player), action, pos)
 	}
@@ -166,7 +168,15 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
-	logger.LogDebug(fmt.Sprintf("[GAMEADMIN] adding action p %s, a %d pos %d, %v", strings.ToLower(player), action, pos, g))
+	logger.LogDebug(
+		fmt.Sprintf(
+			"[GAMEADMIN] adding action p %s, a %d pos %d, %v",
+			strings.ToLower(player),
+			action,
+			pos,
+			g,
+		),
+	)
 
 	if g.PlayerA.PlayerID == strings.ToLower(player) {
 		if g.PlayerA.Set {
@@ -181,7 +191,13 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 		g.PlayerA.Set = true
 		g.PlayerA.ActionType = action
 		g.PlayerA.Pos = pos
-		logger.LogDebug(fmt.Sprintf("[GAMEADMIN] is player one %s %s", strings.ToLower(player), g.PlayerA.PlayerID))
+		logger.LogDebug(
+			fmt.Sprintf(
+				"[GAMEADMIN] is player one %s %s",
+				strings.ToLower(player),
+				g.PlayerA.PlayerID,
+			),
+		)
 
 	} else if g.PlayerB.PlayerID == strings.ToLower(player) {
 		if g.PlayerB.Set {
@@ -208,7 +224,6 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 	}
 
 	return nil
-
 }
 
 func (g *GameAdmin) ExecuteAction() error {

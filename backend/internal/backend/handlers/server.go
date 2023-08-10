@@ -274,7 +274,7 @@ func (b *Backend) HandleMessage(
 				logger.LogDebug(fmt.Sprintf("[backend] duel request enemy NOT found: %s!!!!", response.Value.PlayerB))
 				// Inform that the enemy is not connected
 				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelRequestMessageError(fmt.Errorf("player b is not connected"))); err != nil {
-					return err
+					return nil
 				}
 			}
 		}

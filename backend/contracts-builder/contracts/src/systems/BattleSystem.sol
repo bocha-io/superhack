@@ -6,6 +6,7 @@ import {System} from "@latticexyz/world/src/System.sol";
 
 // Battle
 import {Match} from "../codegen/tables/Match.sol";
+import {Status} from "../codegen/tables/Status.sol";
 import {MatchResult} from "../codegen/tables/MatchResult.sol";
 import {PlayerOne} from "../codegen/tables/PlayerOne.sol";
 import {PlayerTwo} from "../codegen/tables/PlayerTwo.sol";
@@ -21,7 +22,7 @@ import {PlayerSecondMon} from "../codegen/tables/PlayerSecondMon.sol";
 import {PlayerThirdMon} from "../codegen/tables/PlayerThirdMon.sol";
 
 // Libs
-import {ActionType, ElementType} from "../codegen/Types.sol";
+import {ActionType, ElementType, StatusType} from "../codegen/Types.sol";
 import {LibDefaults} from "../libs/LibDefaults.sol";
 
 contract BattleSystem is System {
@@ -153,6 +154,8 @@ contract BattleSystem is System {
         PlayerOne.deleteRecord(matchID);
         PlayerTwo.deleteRecord(matchID);
         MatchResult.set(matchID, winner, loser);
+        Status.set(winner, StatusType.Walking);
+        Status.set(loser, StatusType.Walking);
     }
 
     function Battle(bytes32 matchID, ActionType playerOneAction, uint8 posOne, ActionType playerTwoAction, uint8 posTwo)

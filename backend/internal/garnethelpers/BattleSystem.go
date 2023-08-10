@@ -99,6 +99,8 @@ func (p *Prediction) endGame(matchID string, winner string, loser string) {
 	p.PlayerOneDeleterecord(matchID)
 	p.PlayerTwoDeleterecord(matchID)
 	p.MatchResultSet(matchID, winner, loser)
+	p.StatusSet(winner, Walking)
+	p.StatusSet(loser, Walking)
 }
 
 func (p *Prediction) Battle(
