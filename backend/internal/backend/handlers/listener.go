@@ -4,6 +4,11 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/bocha-io/garnet/x/indexer/data"
+	"github.com/bocha-io/logger"
+	"github.com/bocha-io/superhack/internal/garnethelpers"
+	"github.com/bocha-io/txbuilder/x/txbuilder"
 )
 
 type PlayerData struct {
@@ -21,9 +26,11 @@ type GameAdmin struct {
 	TimeStart time.Time
 	Active    bool
 	mu        *sync.Mutex
+
+	backend *Backend
 }
 
-func NewGameAdmin(matchID string, playerA string, playerB string) *GameAdmin {
+func NewGameAdmin(matchID string, playerA string, playerB string, backend *Backend) *GameAdmin {
 	g := &GameAdmin{
 		MatchID: matchID,
 		PlayerA: PlayerData{
@@ -37,7 +44,8 @@ func NewGameAdmin(matchID string, playerA string, playerB string) *GameAdmin {
 		Active:    true,
 		TimeStart: time.Now(),
 
-		mu: &sync.Mutex{},
+		mu:      &sync.Mutex{},
+		backend: backend,
 	}
 
 	go g.Subrutine()
@@ -48,6 +56,11 @@ type GameAdmins struct {
 	Admins        map[string]*GameAdmin
 	MatchRequests map[string]string
 	mu            *sync.Mutex
+	backend       *Backend
+}
+
+func (ga *GameAdmins) SetBackend(b *Backend) {
+	ga.backend = b
 }
 
 func (ga *GameAdmins) AddMatchRequest(playerA string, playerB string) {
@@ -81,6 +94,7 @@ func NewGameAdmins() *GameAdmins {
 		Admins:        map[string]*GameAdmin{},
 		MatchRequests: make(map[string]string),
 		mu:            &sync.Mutex{},
+		backend:       nil,
 	}
 }
 
@@ -96,7 +110,7 @@ func (ga *GameAdmins) AddAdmin(matchID string, playerA string, playerB string) e
 	if _, ok := ga.Admins[matchID]; ok {
 		return fmt.Errorf("match already has an admin")
 	}
-	ga.Admins[matchID] = NewGameAdmin(matchID, playerA, playerB)
+	ga.Admins[matchID] = NewGameAdmin(matchID, playerA, playerB, ga.backend)
 	return nil
 }
 
@@ -167,37 +181,115 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 	}
 
 	if g.PlayerA.Set && g.PlayerB.Set {
-		g.ExecuteAction()
+		_ = g.ExecuteAction()
 	}
 
 	return fmt.Errorf("invalid player ID")
 }
 
-func (g *GameAdmin) ExecuteAction() {
+func (g *GameAdmin) ExecuteAction() error {
 	fmt.Println("execute action", g)
+
+	matchID, err := txbuilder.StringToSlice(g.MatchID)
+	if err != nil {
+		value := fmt.Errorf("error parsing params for battle")
+		logger.LogDebug(
+			fmt.Sprintf("[backend] error creating transaction to battle: %s", value),
+		)
+		return value
+	}
+
+	prediction := garnethelpers.NewPrediction(g.backend.db)
+	prediction.Battle(
+		g.MatchID,
+		int64(g.PlayerA.ActionType),
+		int64(g.PlayerA.Pos),
+		int64(g.PlayerB.ActionType),
+		int64(g.PlayerB.Pos),
+	)
+
+	txhash, err := g.backend.txBuilder.InteractWithContract(
+		0,
+		"Battle",
+		matchID,
+		g.PlayerA.ActionType,
+		g.PlayerA.Pos,
+		g.PlayerB.ActionType,
+		g.PlayerB.Pos,
+	)
+	if err != nil {
+		value := fmt.Errorf("error sending battle tx")
+		return value
+	}
+
+	g.backend.db.AddTxSent(data.UnconfirmedTransaction{
+		Txhash: txhash.Hex(),
+		Events: prediction.Events,
+	})
+
+	playerOneSwapped := false
+	playerTwoSwapped := false
+	damaged := []string{}
+	for _, v := range prediction.Events {
+		if v.Table == "PlayerOneCurrentMon" {
+			playerOneSwapped = true
+		}
+		if v.Table == "PlayerTwoCurrentMon" {
+			playerTwoSwapped = true
+		}
+		if v.Table == "MonHp" {
+			damaged = append(damaged, v.Key)
+		}
+	}
+	playerOneAttack := int8(-1)
+	playerTwoAttack := int8(-1)
+	if !playerOneSwapped {
+		playerOneAttack = int8(g.PlayerA.ActionType)
+	}
+
+	if !playerTwoSwapped {
+		playerTwoAttack = int8(g.PlayerB.ActionType)
+	}
+
+	// TODO: if match ended, player one and two will fail
+	actions := Actions{
+		PlayerOneSwapped: playerOneSwapped,
+		PlayerTwoSwapped: playerTwoSwapped,
+		DamagedUnits:     damaged,
+		PlayerOneAttack:  playerOneAttack,
+		PlayerTwoAttack:  playerTwoAttack,
+	}
+
+	g.backend.broadcastMatchState(g.MatchID, g.PlayerA.PlayerID, g.PlayerB.PlayerID, actions)
+
+	// TODO: if game ended set g.Active as false
+	// Reset
 	g.PlayerA.Set = false
+	g.PlayerA.ActionType = 0
 	g.PlayerB.Set = false
+	g.PlayerB.ActionType = 0
 	g.TimeStart = time.Now()
+	return nil
 }
 
 func (g *GameAdmin) Subrutine() {
 	for g.Active {
 		if g.PlayerA.Set && g.PlayerB.Set {
 			g.mu.Lock()
-			g.ExecuteAction()
+			_ = g.ExecuteAction()
 			g.mu.Unlock()
-		}
-
-		if time.Now().Add(-60*time.Second).Compare(g.TimeStart) == 1 {
+		} else if time.Now().Add(-60*time.Second).Compare(g.TimeStart) == 1 {
 			// The user didn't sent the action, assume surrender
 			if !g.PlayerA.Set {
-				fmt.Println("surrender playerA")
+				g.PlayerA.ActionType = 2
 			} else {
-				fmt.Println("surrender playerB")
+				g.PlayerB.ActionType = 2
 			}
+			g.mu.Lock()
+			_ = g.ExecuteAction()
+			g.mu.Unlock()
 			g.Active = false
 		}
 		time.Sleep(500 * time.Millisecond)
 	}
-
 }

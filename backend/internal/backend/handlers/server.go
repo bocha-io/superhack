@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"crypto/ecdsa"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
@@ -89,6 +90,7 @@ func NewBackend(
 		queryClient: garnethelpers.NewGameObject(db),
 		gameAdmins:  NewGameAdmins(),
 	}
+	b.gameAdmins.SetBackend(b)
 
 	return b
 }
@@ -233,7 +235,7 @@ func (b *Backend) HandleMessage(
 			return err
 		} else {
 			// TODO: remove websocket from list when connection is closed
-			b.wsList[ws.WalletAddress] = ws
+			b.AddWebSocket(ws.WalletAddress, ws)
 			b.broadcastPositions()
 		}
 
@@ -247,7 +249,9 @@ func (b *Backend) HandleMessage(
 			b.broadcastPositions()
 			return nil
 		}
+
 	case DuelRequestMessageType:
+
 		if response, err := b.duelRequestMessage(ws, p); err != nil {
 			return err
 		} else {
@@ -272,7 +276,7 @@ func (b *Backend) HandleMessage(
 		}
 
 	case DuelResponseMessageType:
-		if response, err := b.duelRequestMessage(ws, p); err != nil {
+		if response, err := b.duelResponseMessage(ws, p); err != nil {
 			return err
 		} else {
 			if player, err := b.gameAdmins.GetMatchRequest(response.Value.PlayerA); err == nil {
@@ -280,51 +284,58 @@ func (b *Backend) HandleMessage(
 					pA := b.GetConex(response.Value.PlayerA)
 					pB := b.GetConex(response.Value.PlayerB)
 					b.gameAdmins.AcceptMatchRequest(response.Value.PlayerA)
-					_ = messages.WriteJSON(enemy.Conn, enemy.ConnMutex, response)
+					_ = messages.WriteJSON(pA.Conn, pA.ConnMutex, response)
+					_ = messages.WriteJSON(pB.Conn, pB.ConnMutex, response)
 
+					// Create a match
+					msg := NewCreateMatchMessage(response.Value.PlayerA, response.Value.PlayerB)
+					bMsg, _ := json.Marshal(msg)
+
+					if response, err := b.createMatchMessage(ws, bMsg); err != nil {
+						// TODO, maybe return something different
+						_ = messages.WriteJSON(pA.Conn, pA.ConnMutex, response)
+						_ = messages.WriteJSON(pB.Conn, pB.ConnMutex, response)
+					} else {
+						// Game created
+						_ = b.gameAdmins.AddAdmin(response.Value.MatchID, response.Value.PlayerOne, response.Value.PlayerTwo)
+					}
 				}
-				return fmt.Errorf("invalidplayer")
-
+				return fmt.Errorf("invalid player")
 			} else {
-
 				return err
 			}
-			enemy := b.GetConex(response.Value.PlayerB)
-			if enemy != nil {
-				// Send duel request to the player B
+		}
 
-				// Add this match to the pending duel list
-				b.gameAdmins.AddMatchRequest(response.Value.PlayerA, response.Value.PlayerB)
-
-				// Inform that the request was sent
-				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
-					return err
-				}
-			} else {
-				// Inform that the enemy is not connected
-				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelRequestMessageError(fmt.Errorf("player b is not connected"))); err != nil {
-					return err
-				}
+	case SendActionMessageType:
+		if response, err := b.sendActionMessage(ws, p); err != nil {
+			return err
+		} else {
+			// Add action to the admin
+			_ = b.gameAdmins.AddAction(response.Value.MatchID, ws.WalletAddress, response.Value.Action, response.Value.Pos)
+			if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+				return err
 			}
-		}
-	case CreateMatchMessageType:
-		if response, err := b.createMatchMessage(ws, p); err != nil {
-			return err
-		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
-			return err
-		} else {
 			return nil
 		}
 
-	case BattleMessageType:
-		if response, err := b.battleMessage(ws, p); err != nil {
-			return err
-		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
-			return err
-		} else {
-			b.broadcastMatchState(response.Value.Match.MatchID, response.Value.Match.PlayerOne, response.Value.Match.PlayerTwo, response.Value.Actions)
-			return nil
-		}
+		// case CreateMatchMessageType:
+		// 	if response, err := b.createMatchMessage(ws, p); err != nil {
+		// 		return err
+		// 	} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+		// 		return err
+		// 	} else {
+		// 		return nil
+		// 	}
+
+		// case BattleMessageType:
+		// 	if response, err := b.battleMessage(ws, p); err != nil {
+		// 		return err
+		// 	} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+		// 		return err
+		// 	} else {
+		// 		b.broadcastMatchState(response.Value.Match.MatchID, response.Value.Match.PlayerOne, response.Value.Match.PlayerTwo, response.Value.Actions)
+		// 		return nil
+		// 	}
 
 	}
 
