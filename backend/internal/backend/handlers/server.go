@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/bocha-io/game-backend/x/messages"
 	"github.com/bocha-io/garnet/x/indexer/data"
@@ -17,11 +18,43 @@ type Backend struct {
 	abi       []byte
 	txBuilder txbuilder.TxBuilder
 	db        *data.Database
-	wsList    map[string]*messages.WebSocketContainer
+
+	wsList map[string]*messages.WebSocketContainer
+	muList *sync.Mutex
 
 	inMemoryDB *InMemoryDatabase
 
 	queryClient *garnethelpers.GameObject
+	gameAdmins  *GameAdmins
+}
+
+func (b *Backend) AddWebSocket(wallet string, conex *messages.WebSocketContainer) {
+	b.muList.Lock()
+	defer b.muList.Unlock()
+	b.wsList[wallet] = conex
+}
+
+func (b *Backend) RemoveWebSocket(wallet string) {
+	b.muList.Lock()
+	defer b.muList.Unlock()
+	delete(b.wsList, wallet)
+}
+
+func (b *Backend) Broadcast(callback func(conex *messages.WebSocketContainer)) {
+	b.muList.Lock()
+	defer b.muList.Unlock()
+	for _, v := range b.wsList {
+		callback(v)
+	}
+}
+
+func (b *Backend) GetConex(wallet string) *messages.WebSocketContainer {
+	b.muList.Lock()
+	defer b.muList.Unlock()
+	if v, ok := b.wsList[wallet]; ok {
+		return v
+	}
+	return nil
 }
 
 func NewBackend(
@@ -47,10 +80,14 @@ func NewBackend(
 		abi:       worldABI,
 		db:        db,
 		txBuilder: *txBuilder,
-		wsList:    map[string]*messages.WebSocketContainer{},
 
-		inMemoryDB:  NewInMemoryDatabase(txBuilder),
+		wsList: map[string]*messages.WebSocketContainer{},
+		muList: &sync.Mutex{},
+
+		inMemoryDB: NewInMemoryDatabase(txBuilder),
+
 		queryClient: garnethelpers.NewGameObject(db),
+		gameAdmins:  NewGameAdmins(),
 	}
 
 	return b
@@ -82,12 +119,12 @@ func (b *Backend) broadcastPositions() {
 	// It would be simpler to get the current position on WS connection, cache it and update it on message move. Remove the item when the ws disconnects
 	status := MapStatus{Players: ret, MsgType: "mapstatus"}
 
-	for _, v := range b.wsList {
-		logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", v.WalletAddress))
-		if v.Conn != nil {
-			_ = messages.WriteJSON(v.Conn, v.ConnMutex, status)
+	b.Broadcast(func(conex *messages.WebSocketContainer) {
+		logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", conex.WalletAddress))
+		if conex.Conn != nil {
+			_ = messages.WriteJSON(conex.Conn, conex.ConnMutex, status)
 		}
-	}
+	})
 }
 
 type Mon struct {
@@ -164,12 +201,19 @@ func (b *Backend) broadcastMatchState(
 
 	res.PlayerTwoCurrentMon, _ = b.queryClient.GetPlayerTwoCurrentMon(playerBKey)
 
-	for k, v := range b.wsList {
-		if k == playerA || k == playerB {
-			logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", v.WalletAddress))
-			if v.Conn != nil {
-				_ = messages.WriteJSON(v.Conn, v.ConnMutex, res)
-			}
+	conex := b.GetConex(playerA)
+	if conex != nil {
+		logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", conex.WalletAddress))
+		if conex.Conn != nil {
+			_ = messages.WriteJSON(conex.Conn, conex.ConnMutex, res)
+		}
+	}
+
+	conex = b.GetConex(playerB)
+	if conex != nil {
+		logger.LogInfo(fmt.Sprintf("[backend] broadcasting position to %s", conex.WalletAddress))
+		if conex.Conn != nil {
+			_ = messages.WriteJSON(conex.Conn, conex.ConnMutex, res)
 		}
 	}
 }
@@ -203,7 +247,66 @@ func (b *Backend) HandleMessage(
 			b.broadcastPositions()
 			return nil
 		}
+	case DuelRequestMessageType:
+		if response, err := b.duelRequestMessage(ws, p); err != nil {
+			return err
+		} else {
+			enemy := b.GetConex(response.Value.PlayerB)
+			if enemy != nil {
+				// Send duel request to the player B
+				_ = messages.WriteJSON(enemy.Conn, enemy.ConnMutex, response)
 
+				// Add this match to the pending duel list
+				b.gameAdmins.AddMatchRequest(response.Value.PlayerA, response.Value.PlayerB)
+
+				// Inform that the request was sent
+				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+					return err
+				}
+			} else {
+				// Inform that the enemy is not connected
+				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelRequestMessageError(fmt.Errorf("player b is not connected"))); err != nil {
+					return err
+				}
+			}
+		}
+
+	case DuelResponseMessageType:
+		if response, err := b.duelRequestMessage(ws, p); err != nil {
+			return err
+		} else {
+			if player, err := b.gameAdmins.GetMatchRequest(response.Value.PlayerA); err == nil {
+				if player == response.Value.PlayerB {
+					pA := b.GetConex(response.Value.PlayerA)
+					pB := b.GetConex(response.Value.PlayerB)
+					b.gameAdmins.AcceptMatchRequest(response.Value.PlayerA)
+					_ = messages.WriteJSON(enemy.Conn, enemy.ConnMutex, response)
+
+				}
+				return fmt.Errorf("invalidplayer")
+
+			} else {
+
+				return err
+			}
+			enemy := b.GetConex(response.Value.PlayerB)
+			if enemy != nil {
+				// Send duel request to the player B
+
+				// Add this match to the pending duel list
+				b.gameAdmins.AddMatchRequest(response.Value.PlayerA, response.Value.PlayerB)
+
+				// Inform that the request was sent
+				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+					return err
+				}
+			} else {
+				// Inform that the enemy is not connected
+				if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelRequestMessageError(fmt.Errorf("player b is not connected"))); err != nil {
+					return err
+				}
+			}
+		}
 	case CreateMatchMessageType:
 		if response, err := b.createMatchMessage(ws, p); err != nil {
 			return err
