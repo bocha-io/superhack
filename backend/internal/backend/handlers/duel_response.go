@@ -66,13 +66,21 @@ func (b *Backend) duelResponseMessage(
 	// Check if the match was created in the server
 	player, err := b.gameAdmins.GetMatchRequest(response.Value.PlayerA)
 	if err != nil {
-		_ = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelResponseMessageResponse(Duel{PlayerA: "", PlayerB: ""}))
+		_ = messages.WriteJSON(
+			ws.Conn,
+			ws.ConnMutex,
+			newDuelResponseMessageResponse(Duel{PlayerA: "", PlayerB: ""}),
+		)
 		return nil
 	}
 
 	// Invalid player
 	if player != response.Value.PlayerB {
-		_ = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelResponseMessageResponse(Duel{PlayerA: "", PlayerB: ""}))
+		_ = messages.WriteJSON(
+			ws.Conn,
+			ws.ConnMutex,
+			newDuelResponseMessageResponse(Duel{PlayerA: "", PlayerB: ""}),
+		)
 		return nil
 	}
 
@@ -91,7 +99,11 @@ func (b *Backend) duelResponseMessage(
 	// Create a match
 	matchMsg, err := createMatch(b, response.Value.PlayerA, response.Value.PlayerB)
 	if err != nil {
-		_ = messages.WriteJSON(ws.Conn, ws.ConnMutex, newDuelResponseMessageResponse(Duel{PlayerA: "", PlayerB: ""}))
+		_ = messages.WriteJSON(
+			ws.Conn,
+			ws.ConnMutex,
+			newDuelResponseMessageResponse(Duel{PlayerA: "", PlayerB: ""}),
+		)
 		return nil
 	}
 
@@ -104,6 +116,10 @@ func (b *Backend) duelResponseMessage(
 	}
 
 	// Game created
-	_ = b.gameAdmins.AddAdmin(matchMsg.Value.MatchID, matchMsg.Value.PlayerOne, matchMsg.Value.PlayerTwo)
+	_ = b.gameAdmins.AddAdmin(
+		matchMsg.Value.MatchID,
+		matchMsg.Value.PlayerOne,
+		matchMsg.Value.PlayerTwo,
+	)
 	return nil
 }

@@ -73,21 +73,33 @@ func (b *Backend) duelRequestMessage(
 		},
 	)
 
-	logger.LogDebug(fmt.Sprintf("[backend] duel request looking for enemy: %s", validResponse.Value.PlayerB))
+	logger.LogDebug(
+		fmt.Sprintf("[backend] duel request looking for enemy: %s", validResponse.Value.PlayerB),
+	)
 	enemy := b.GetConex(duelrequestMsg.Enemy)
 	if enemy != nil {
-		logger.LogDebug(fmt.Sprintf("[backend] duel request enemy found: %s", validResponse.Value.PlayerB))
+		logger.LogDebug(
+			fmt.Sprintf("[backend] duel request enemy found: %s", validResponse.Value.PlayerB),
+		)
 		// Send duel request to the player B
 		_ = messages.WriteJSON(enemy.Conn, enemy.ConnMutex, validResponse)
 
 		// Add this match to the pending duel list
 		b.gameAdmins.AddMatchRequest(validResponse.Value.PlayerA, validResponse.Value.PlayerB)
-		logger.LogInfo(fmt.Sprintf("[backend] adding match %s vs %s", validResponse.Value.PlayerA, validResponse.Value.PlayerB))
+		logger.LogInfo(
+			fmt.Sprintf(
+				"[backend] adding match %s vs %s",
+				validResponse.Value.PlayerA,
+				validResponse.Value.PlayerB,
+			),
+		)
 
 		return validResponse, nil
 	}
 
-	logger.LogDebug(fmt.Sprintf("[backend] duel request enemy NOT found: %s!!!!", validResponse.Value.PlayerB))
+	logger.LogDebug(
+		fmt.Sprintf("[backend] duel request enemy NOT found: %s!!!!", validResponse.Value.PlayerB),
+	)
 	// Inform that the enemy is not connected
 	validResponse.Value.PlayerB = ""
 	return validResponse, nil

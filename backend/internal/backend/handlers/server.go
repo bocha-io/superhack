@@ -138,7 +138,12 @@ func (b *Backend) HandleMessage(
 			return err
 		}
 		// Add action to the admin
-		_ = b.gameAdmins.AddAction(response.Value.MatchID, ws.WalletAddress, response.Value.Action, response.Value.Pos)
+		_ = b.gameAdmins.AddAction(
+			response.Value.MatchID,
+			ws.WalletAddress,
+			response.Value.Action,
+			response.Value.Pos,
+		)
 		return messages.WriteJSON(ws.Conn, ws.ConnMutex, response)
 	}
 

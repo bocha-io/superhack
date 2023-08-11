@@ -212,7 +212,13 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 		g.PlayerB.Set = true
 		g.PlayerB.ActionType = action
 		g.PlayerB.Pos = pos
-		logger.LogDebug(fmt.Sprintf("[GAMEADMIN] is player two %s %s", strings.ToLower(player), g.PlayerB.PlayerID))
+		logger.LogDebug(
+			fmt.Sprintf(
+				"[GAMEADMIN] is player two %s %s",
+				strings.ToLower(player),
+				g.PlayerB.PlayerID,
+			),
+		)
 	default:
 		return fmt.Errorf("invalid player ID")
 	}
