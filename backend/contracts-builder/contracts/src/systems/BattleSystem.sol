@@ -6,6 +6,7 @@ import {System} from "@latticexyz/world/src/System.sol";
 
 // Battle
 import {Match} from "../codegen/tables/Match.sol";
+import {Status} from "../codegen/tables/Status.sol";
 import {MatchResult} from "../codegen/tables/MatchResult.sol";
 import {PlayerOne} from "../codegen/tables/PlayerOne.sol";
 import {PlayerTwo} from "../codegen/tables/PlayerTwo.sol";
@@ -21,7 +22,7 @@ import {PlayerSecondMon} from "../codegen/tables/PlayerSecondMon.sol";
 import {PlayerThirdMon} from "../codegen/tables/PlayerThirdMon.sol";
 
 // Libs
-import {ActionType, ElementType} from "../codegen/Types.sol";
+import {ActionType, ElementType, StatusType} from "../codegen/Types.sol";
 import {LibDefaults} from "../libs/LibDefaults.sol";
 
 contract BattleSystem is System {
@@ -153,6 +154,8 @@ contract BattleSystem is System {
         PlayerOne.deleteRecord(matchID);
         PlayerTwo.deleteRecord(matchID);
         MatchResult.set(matchID, winner, loser);
+        Status.set(winner, StatusType.Walking);
+        Status.set(loser, StatusType.Walking);
     }
 
     function Battle(bytes32 matchID, ActionType playerOneAction, uint8 posOne, ActionType playerTwoAction, uint8 posTwo)
@@ -167,6 +170,18 @@ contract BattleSystem is System {
         bool p2Executed = false;
         bytes32 p2Mon = PlayerTwoCurrentMon.get(matchID);
 
+        // Handle surrender cases
+        if (playerOneAction == ActionType.Surrender) {
+            endGame(matchID, PlayerTwo.get(matchID), PlayerOne.get(matchID));
+            return;
+        }
+
+        if (playerTwoAction == ActionType.Surrender) {
+            endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+            return;
+        }
+
+        // Handle Swaps
         if (playerOneAction == ActionType.Swap) {
             p1Executed = true;
             // Do Swap
@@ -189,8 +204,10 @@ contract BattleSystem is System {
         } else if (MonHp.get(p2Mon) == 0) {
             // Surrender player two
             endGame(matchID, PlayerOne.get(matchID), PlayerTwo.get(matchID));
+            return;
         }
 
+        // Handle Attacks
         if (!p1Executed) {
             if (!p2Executed) {
                 // fight returns true if the game ended

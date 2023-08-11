@@ -53,7 +53,7 @@ export default mudConfig({
       "Ramon",
     ],
     StatusType: ["Walking", "Fighting"],
-    ActionType: ["Attack", "Swap"],
+    ActionType: ["Attack", "Swap", "Surrender"],
     ElementType: ["Fire", "Water", "Grass", "Normal"],
     AttackType: [
       // Fire
