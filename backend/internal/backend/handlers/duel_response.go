@@ -121,5 +121,9 @@ func (b *Backend) duelResponseMessage(
 		matchMsg.Value.PlayerOne,
 		matchMsg.Value.PlayerTwo,
 	)
+
+	// Broadcast the match info
+	b.broadcastMatchState(matchMsg.Value.MatchID, matchMsg.Value.PlayerOne, matchMsg.Value.PlayerTwo, Actions{})
+
 	return nil
 }
