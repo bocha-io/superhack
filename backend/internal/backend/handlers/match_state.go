@@ -72,7 +72,7 @@ func (b *Backend) broadcastMatchState(
 	res.PlayerOneMons.Third.MonHP, _ = b.queryClient.GetMonHp(res.PlayerOneMons.Third.MonID)
 	res.PlayerOneMons.Third.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerOneMons.Third.MonID)
 
-	res.PlayerOneCurrentMon, _ = b.queryClient.GetPlayerOneCurrentMon(playerAKey)
+	res.PlayerOneCurrentMon, _ = b.queryClient.GetPlayerOneCurrentMon(matchID)
 
 	playerBKey := strings.ToLower(
 		strings.Replace(playerB, "0x", "0x000000000000000000000000", 1),
@@ -89,7 +89,7 @@ func (b *Backend) broadcastMatchState(
 	res.PlayerTwoMons.Third.MonHP, _ = b.queryClient.GetMonHp(res.PlayerTwoMons.Third.MonID)
 	res.PlayerTwoMons.Third.MonType, _ = b.queryClient.GetMonSpecie(res.PlayerTwoMons.Third.MonID)
 
-	res.PlayerTwoCurrentMon, _ = b.queryClient.GetPlayerTwoCurrentMon(playerBKey)
+	res.PlayerTwoCurrentMon, _ = b.queryClient.GetPlayerTwoCurrentMon(matchID)
 
 	conex := b.GetConex(playerA)
 	if conex != nil {

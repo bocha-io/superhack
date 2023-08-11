@@ -67,3 +67,4 @@ ExportedObj/
 # Temporary auto-generated Android Assets
 /frontend/[Aa]ssets/[Ss]treamingAssets/aa.meta
 /frontend/[Aa]ssets/[Ss]treamingAssets/aa/*
+.DS_Store

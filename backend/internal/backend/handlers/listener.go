@@ -225,10 +225,6 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 
 	logger.LogDebug(fmt.Sprintf("[GAMEADMIN] action status %v", g))
 
-	if g.PlayerA.Set && g.PlayerB.Set {
-		_ = g.ExecuteAction()
-	}
-
 	return nil
 }
 
@@ -330,10 +326,9 @@ func (g *GameAdmin) ExecuteAction() error {
 
 func (g *GameAdmin) Subrutine() {
 	for g.Active {
+		g.mu.Lock()
 		if g.PlayerA.Set && g.PlayerB.Set {
-			g.mu.Lock()
 			_ = g.ExecuteAction()
-			g.mu.Unlock()
 		} else if time.Now().Add(-60*time.Second).Compare(g.TimeStart) == 1 {
 			// The user didn't sent the action, assume surrender
 			if !g.PlayerA.Set {
@@ -341,11 +336,10 @@ func (g *GameAdmin) Subrutine() {
 			} else {
 				g.PlayerB.ActionType = 2
 			}
-			g.mu.Lock()
 			_ = g.ExecuteAction()
-			g.mu.Unlock()
 			g.Active = false
 		}
+		g.mu.Unlock()
 		time.Sleep(500 * time.Millisecond)
 	}
 }
