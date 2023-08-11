@@ -178,7 +178,8 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 		),
 	)
 
-	if g.PlayerA.PlayerID == strings.ToLower(player) {
+	switch strings.ToLower(player) {
+	case g.PlayerA.PlayerID:
 		if g.PlayerA.Set {
 			return fmt.Errorf("the action for this turn is already set")
 		}
@@ -198,8 +199,7 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 				g.PlayerA.PlayerID,
 			),
 		)
-
-	} else if g.PlayerB.PlayerID == strings.ToLower(player) {
+	case g.PlayerB.PlayerID:
 		if g.PlayerB.Set {
 			return fmt.Errorf("the action for this turn is already set")
 		}
@@ -213,7 +213,7 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 		g.PlayerB.ActionType = action
 		g.PlayerB.Pos = pos
 		logger.LogDebug(fmt.Sprintf("[GAMEADMIN] is player two %s %s", strings.ToLower(player), g.PlayerB.PlayerID))
-	} else {
+	default:
 		return fmt.Errorf("invalid player ID")
 	}
 

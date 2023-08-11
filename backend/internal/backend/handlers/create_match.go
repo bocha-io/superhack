@@ -1,23 +1,16 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
-	"github.com/bocha-io/game-backend/x/messages"
 	"github.com/bocha-io/garnet/x/indexer/data"
 	"github.com/bocha-io/logger"
 	"github.com/bocha-io/superhack/internal/garnethelpers"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
 )
 
-type CreateMatchMessage struct {
-	MsgType string `json:"msgtype"`
-	PlayerA string `json:"playera"`
-	PlayerB string `json:"playerb"`
-}
-
+// Match
 type Match struct {
 	MatchID   string `json:"id"`
 	PlayerOne string `json:"playerone"`
@@ -31,17 +24,8 @@ type CreateMatchMessageResponse struct {
 }
 
 const (
-	CreateMatchMessageType       = "creatematch"
 	CreateMatchMessageResponseID = "creatematchresponse"
 )
-
-func NewCreateMatchMessage(playerA string, playerB string) CreateMatchMessage {
-	return CreateMatchMessage{
-		MsgType: CreateMatchMessageType,
-		PlayerA: playerA,
-		PlayerB: playerB,
-	}
-}
 
 func newCreateMatchMessageError(err error) CreateMatchMessageResponse {
 	return CreateMatchMessageResponse{
@@ -59,9 +43,10 @@ func newCreateMatchMessageResponse(match Match) CreateMatchMessageResponse {
 	}
 }
 
-func (b *Backend) createMatchMessage(
-	ws *messages.WebSocketContainer,
-	p []byte,
+func createMatch(
+	b *Backend,
+	playerA string,
+	playerB string,
 ) (resp CreateMatchMessageResponse, err error) {
 	// The prediction will panic if something fails in the database, catch it here
 	defer func() {
@@ -71,22 +56,10 @@ func (b *Backend) createMatchMessage(
 		}
 	}()
 
-	if !ws.Authenticated {
-		return CreateMatchMessageResponse{}, fmt.Errorf("user is not logged in")
-	}
-
-	var creatematchMsg CreateMatchMessage
-	err = json.Unmarshal(p, &creatematchMsg)
-	if err != nil {
-		return newCreateMatchMessageError(err), err
-	}
-
-	// We get the wallet address, so we need to add the padding to the ids
-	walletA := creatematchMsg.PlayerA
-	creatematchMsg.PlayerA = strings.ToLower(
-		strings.Replace(creatematchMsg.PlayerA, "0x", "0x000000000000000000000000", 1),
+	paddedPlayerA := strings.ToLower(
+		strings.Replace(playerA, "0x", "0x000000000000000000000000", 1),
 	)
-	playerA, err := txbuilder.StringToSlice(creatematchMsg.PlayerA)
+	playerABytes, err := txbuilder.StringToSlice(paddedPlayerA)
 	if err != nil {
 		value := fmt.Errorf("error parsing params for create match")
 		logger.LogDebug(
@@ -95,11 +68,10 @@ func (b *Backend) createMatchMessage(
 		return newCreateMatchMessageError(value), value
 	}
 
-	walletB := creatematchMsg.PlayerB
-	creatematchMsg.PlayerB = strings.ToLower(
-		strings.Replace(creatematchMsg.PlayerB, "0x", "0x000000000000000000000000", 1),
+	paddedPlayerB := strings.ToLower(
+		strings.Replace(playerB, "0x", "0x000000000000000000000000", 1),
 	)
-	playerB, err := txbuilder.StringToSlice(creatematchMsg.PlayerB)
+	playerBBytes, err := txbuilder.StringToSlice(paddedPlayerB)
 	if err != nil {
 		value := fmt.Errorf("error parsing params for create match")
 		logger.LogDebug(
@@ -109,9 +81,9 @@ func (b *Backend) createMatchMessage(
 	}
 
 	prediction := garnethelpers.NewPrediction(b.db)
-	prediction.CreateMatch(creatematchMsg.PlayerA, creatematchMsg.PlayerB)
+	prediction.CreateMatch(paddedPlayerA, paddedPlayerB)
 
-	txhash, err := b.txBuilder.InteractWithContract(ws.WalletID, "CreateMatch", playerA, playerB)
+	txhash, err := b.txBuilder.InteractWithContract(0, "CreateMatch", playerABytes, playerBBytes)
 	if err != nil {
 		value := fmt.Errorf("error sending creatematch tx")
 		return newCreateMatchMessageError(value), value
@@ -133,8 +105,8 @@ func (b *Backend) createMatchMessage(
 	return newCreateMatchMessageResponse(
 		Match{
 			MatchID:   matchID,
-			PlayerOne: walletA,
-			PlayerTwo: walletB,
+			PlayerOne: playerA,
+			PlayerTwo: playerB,
 		},
 	), nil
 }
