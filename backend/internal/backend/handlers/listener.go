@@ -225,10 +225,6 @@ func (g *GameAdmin) AddAction(player string, action uint8, pos uint8) error {
 
 	logger.LogDebug(fmt.Sprintf("[GAMEADMIN] action status %v", g))
 
-	if g.PlayerA.Set && g.PlayerB.Set {
-		_ = g.ExecuteAction()
-	}
-
 	return nil
 }
 
