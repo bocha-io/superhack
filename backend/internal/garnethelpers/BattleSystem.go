@@ -39,11 +39,11 @@ func (p *Prediction) fight(
 ) bool {
 	playerOneSpeed := int64(0)
 	speedMonPlayerOne, _ := p.getMonSpeedAndType(p.MonSpecieGet(monOne))
-	atkSpeedMonOne, _, _ := p.getAttack(p.MonSpecieGet(monOne), posOne)
+	_, atkSpeedMonOne, _ := p.getAttack(p.MonSpecieGet(monOne), posOne)
 	playerOneSpeed = speedMonPlayerOne + atkSpeedMonOne
 	playerTwoSpeed := int64(0)
 	speedMonPlayerTwo, _ := p.getMonSpeedAndType(p.MonSpecieGet(monTwo))
-	atkSpeedMonTwo, _, _ := p.getAttack(p.MonSpecieGet(monTwo), posTwo)
+	_, atkSpeedMonTwo, _ := p.getAttack(p.MonSpecieGet(monTwo), posTwo)
 	playerTwoSpeed = speedMonPlayerTwo + atkSpeedMonTwo
 	if playerOneSpeed >= playerTwoSpeed {
 		if p.attack(monOne, monTwo, posOne) == int64(0) {
