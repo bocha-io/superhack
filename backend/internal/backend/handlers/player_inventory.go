@@ -67,7 +67,7 @@ func (b *Backend) inventoryMessage(
 		return newInventoryMessageError(err), err
 	}
 
-	res := make([]int64, 3)
+	res := make([]int64, 0, 3)
 	temp := strings.Replace(ws.WalletAddress, "0x", "0x000000000000000000000000", 1)
 	mon, err := b.queryClient.GetInventoryFirstMon(temp)
 	if err != nil {
