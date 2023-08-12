@@ -117,8 +117,10 @@ func (ga *GameAdmins) AddAdmin(matchID string, playerA string, playerB string) e
 		),
 	)
 	if v, ok := ga.Admins[strings.ToLower(matchID)]; ok {
-		logger.LogDebug(fmt.Sprintf("[backend] game admin NOT created %v %v", v, ok))
-		return fmt.Errorf("match already has an admin")
+		if v.Active {
+			logger.LogDebug(fmt.Sprintf("[backend] game admin NOT created %v %v", v, ok))
+			return fmt.Errorf("match already has an admin")
+		}
 	}
 	ga.Admins[strings.ToLower(matchID)] = NewGameAdmin(
 		strings.ToLower(matchID),
