@@ -91,6 +91,7 @@ func (b *Backend) bridgeMessage(
 	txhash, err := b.txBuilder.InteractWithContract(
 		constants.ERC20ContractName,
 		ws.WalletID,
+		big.NewInt(0),
 		"approve",
 		sliceAddress,
 		amount,
@@ -99,6 +100,7 @@ func (b *Backend) bridgeMessage(
 		logger.LogError(fmt.Sprintf("[APPROVE] error sending approve: %s", err.Error()))
 		return newBridgeMessageError(err), err
 	}
+	logger.LogError(fmt.Sprintf("[APPROVE] sent with hash: %s", txhash))
 
 	// Wait 5 seconds
 	time.Sleep(5 * time.Second)
@@ -107,6 +109,7 @@ func (b *Backend) bridgeMessage(
 	txhash, err = b.txBuilder.InteractWithContract(
 		constants.BridgeContractName,
 		ws.WalletID,
+		big.NewInt(94313772364324),
 		"sendFrom",
 		sliceAddress,
 		uint16(184),

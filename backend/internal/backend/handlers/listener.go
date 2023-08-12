@@ -257,6 +257,7 @@ func (g *GameAdmin) ExecuteAction() error {
 	txhash, err := g.backend.txBuilder.InteractWithContract(
 		constants.WorldContractName,
 		0,
+		big.NewInt(0),
 		"Battle",
 		matchID,
 		g.PlayerA.ActionType,
@@ -339,6 +340,7 @@ func (g *GameAdmin) ExecuteAction() error {
 		_, err := g.backend.txBuilder.InteractWithContract(
 			constants.ERC20ContractName,
 			0,
+			big.NewInt(0),
 			"transfer",
 			sliceAddress,
 			amount,

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/bocha-io/garnet/x/indexer/data"
@@ -87,6 +88,7 @@ func createMatch(
 	txhash, err := b.txBuilder.InteractWithContract(
 		constants.WorldContractName,
 		0,
+		big.NewInt(0),
 		"CreateMatch",
 		playerABytes,
 		playerBBytes,

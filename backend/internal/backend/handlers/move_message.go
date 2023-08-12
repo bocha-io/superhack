@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 
 	"github.com/bocha-io/game-backend/x/messages"
 	"github.com/bocha-io/garnet/x/indexer/data"
@@ -79,6 +80,7 @@ func (b *Backend) moveMessage(
 	txhash, err := b.txBuilder.InteractWithContract(
 		constants.WorldContractName,
 		ws.WalletID,
+		big.NewInt(0),
 		"Move",
 		moveMsg.X,
 		moveMsg.Y,

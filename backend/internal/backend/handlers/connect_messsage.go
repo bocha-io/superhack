@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 	"strings"
 
 	"github.com/bocha-io/game-backend/x/messages"
@@ -92,7 +93,7 @@ func (b *Backend) connectMessage(
 			),
 		)
 
-		_, err = b.txBuilder.InteractWithContract(constants.WorldContractName, index, "register")
+		_, err = b.txBuilder.InteractWithContract(constants.WorldContractName, index, big.NewInt(0), "register")
 		if err != nil {
 			logger.LogError(
 				fmt.Sprintf("[backend] error registering wallet %s, %s", address, err.Error()),
