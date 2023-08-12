@@ -64,14 +64,14 @@ contract BattleSystem is System {
         int32 playerOneSpeed = 0;
         {
             (int32 speedMonPlayerOne,) = LibDefaults.getMonSpeedAndType(MonSpecie.get(monOne));
-            (int32 atkSpeedMonOne,,) = LibDefaults.getAttack(MonSpecie.get(monOne), posOne);
+            (, int32 atkSpeedMonOne,) = LibDefaults.getAttack(MonSpecie.get(monOne), posOne);
             playerOneSpeed = speedMonPlayerOne + atkSpeedMonOne;
         }
 
         int32 playerTwoSpeed = 0;
         {
             (int32 speedMonPlayerTwo,) = LibDefaults.getMonSpeedAndType(MonSpecie.get(monTwo));
-            (int32 atkSpeedMonTwo,,) = LibDefaults.getAttack(MonSpecie.get(monTwo), posTwo);
+            (, int32 atkSpeedMonTwo,) = LibDefaults.getAttack(MonSpecie.get(monTwo), posTwo);
             playerTwoSpeed = speedMonPlayerTwo + atkSpeedMonTwo;
         }
 
