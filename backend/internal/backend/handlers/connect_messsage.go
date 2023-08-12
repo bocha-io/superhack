@@ -93,7 +93,12 @@ func (b *Backend) connectMessage(
 			),
 		)
 
-		_, err = b.txBuilder.InteractWithContract(constants.WorldContractName, index, big.NewInt(0), "register")
+		_, err = b.txBuilder.InteractWithContract(
+			constants.WorldContractName,
+			index,
+			big.NewInt(0),
+			"register",
+		)
 		if err != nil {
 			logger.LogError(
 				fmt.Sprintf("[backend] error registering wallet %s, %s", address, err.Error()),

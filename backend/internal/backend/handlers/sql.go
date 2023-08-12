@@ -21,6 +21,7 @@ func OpenDatabase(path string) *sql.DB {
 }
 
 func InitDatabase(builder *txbuilder.TxBuilder) {
+	_ = builder
 	db := OpenDatabase(dbPath)
 	sqlStmt := `
        create table if not exists users(
