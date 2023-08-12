@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/bocha-io/logger"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -79,21 +78,21 @@ func InitDatabase(builder *txbuilder.TxBuilder) {
 	}
 	rows.Close()
 
-	end := usersCount + 20
-	for faucet <= end {
-		_, errFaucet := builder.FundAnAccount(faucet)
-		logger.LogInfo(fmt.Sprintf("[backend] sending coins to wallet: %d", faucet))
-		if errFaucet != nil {
-			logger.LogError(
-				fmt.Sprintf(
-					"[backend] error sending coins to wallet %d, %s",
-					faucet,
-					errFaucet.Error(),
-				),
-			)
-		}
-		faucet++
-	}
+	// end := usersCount + 20
+	// for faucet <= end {
+	// 	_, errFaucet := builder.FundAnAccount(faucet)
+	// 	logger.LogInfo(fmt.Sprintf("[backend] sending coins to wallet: %d", faucet))
+	// 	if errFaucet != nil {
+	// 		logger.LogError(
+	// 			fmt.Sprintf(
+	// 				"[backend] error sending coins to wallet %d, %s",
+	// 				faucet,
+	// 				errFaucet.Error(),
+	// 			),
+	// 		)
+	// 	}
+	// 	faucet++
+	// }
 
 	tx, _ := db.Begin()
 	updateFaucet, err := tx.Prepare("INSERT OR REPLACE INTO faucet(id, amount) VALUES (?,?)")
