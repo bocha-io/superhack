@@ -71,8 +71,8 @@ github.com/bocha-io/garnet v0.0.0-20230812201520-63b69a5945c2 h1:OmqeXacXLt5HG3U
 github.com/bocha-io/garnet v0.0.0-20230812201520-63b69a5945c2/go.mod h1:uyxG9gv5jMC4HX+II14rzoCU2jlQadyCIxo0uqGw0Cg=
 github.com/bocha-io/logger v0.0.0-20230722133508-fbef5d720b58 h1:YolHxRI5xP1OMz8fpFRxcemc1SUqCIgOoydzx1Ued5w=
 github.com/bocha-io/logger v0.0.0-20230722133508-fbef5d720b58/go.mod h1:Olzi9RTqkwp2lz8cNFGW7gAZh8PNk+HJ8bw8BDqpMmY=
-github.com/bocha-io/txbuilder v0.0.0-20230812143713-ce4b436952b2 h1:ii7UHvLlK1w42srShArbHOAchIygMG9OKdQIacsEYSY=
-github.com/bocha-io/txbuilder v0.0.0-20230812143713-ce4b436952b2/go.mod h1:STXerEYjMmKwVvc2ujkHQyr0YRtJNJXF5AaQ+F7AauM=
+github.com/bocha-io/txbuilder v0.0.0-20230812224243-70a9225c772b h1:zj/pRRe8C/+0/qfKc/ZOO8zWPwakDIIR7T1QS+DxoHk=
+github.com/bocha-io/txbuilder v0.0.0-20230812224243-70a9225c772b/go.mod h1:STXerEYjMmKwVvc2ujkHQyr0YRtJNJXF5AaQ+F7AauM=
 github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx27Ps=
 github.com/btcsuite/btcd v0.20.1-beta/go.mod h1:wVuoA8VJLEcwgqHBwHmzLRazpKxTv13Px/pDuV7OomQ=
 github.com/btcsuite/btcd v0.21.0-beta/go.mod h1:ZSWyehm27aAuS9bvkATT+Xte3hjHZ+MRgMY/8NJ7K94=
