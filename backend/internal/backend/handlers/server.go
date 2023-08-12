@@ -141,6 +141,15 @@ func (b *Backend) HandleMessage(
 			return nil
 		}
 
+	case SwapMessageType:
+		if response, err := b.swapMessage(ws, p); err != nil {
+			return err
+		} else if err = messages.WriteJSON(ws.Conn, ws.ConnMutex, response); err != nil {
+			return err
+		} else {
+			return nil
+		}
+
 	case DuelRequestMessageType:
 		if response, err := b.duelRequestMessage(ws, p); err != nil {
 			return err
