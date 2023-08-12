@@ -9,6 +9,6 @@ func (p *Prediction) register(senderAddress string) {
 	p.InventoryFirstMonSet(senderKey, Flarezael)
 	p.InventorySecondMonSet(senderKey, Baobaffe)
 	p.InventoryThirdMonSet(senderKey, Tobishimi)
-	p.PositionSet(senderKey, int64(0), int64(0))
+	p.PositionSet(senderKey, int64(100), int64(100))
 	p.StatusSet(senderKey, Walking)
 }

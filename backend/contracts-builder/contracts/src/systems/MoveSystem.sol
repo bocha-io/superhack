@@ -17,7 +17,7 @@ contract MoveSystem is System {
         require(Player.get(senderKey) == true, "wallet is not registered");
 
         // Check that the X and Y are valid values
-        require(newX >= 0 && newX <= 380 && newY >= 0 && newY <= 244, "invalid X and Y");
+        require(newX >= 0 && newY >= 0, "invalid X and Y");
         Position.set(senderKey, newX, newY);
     }
 }

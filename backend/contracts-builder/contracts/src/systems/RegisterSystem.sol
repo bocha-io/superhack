@@ -29,7 +29,7 @@ contract RegisterSystem is System {
         InventoryThirdMon.set(senderKey, MonType.Tobishimi);
 
         // Set initial position
-        Position.set(senderKey, 0, 0);
+        Position.set(senderKey, 100, 100);
 
         // Set player status
         Status.set(senderKey, StatusType.Walking);
