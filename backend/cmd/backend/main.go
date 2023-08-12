@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/bocha-io/superhack/internal/backend"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
