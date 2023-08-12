@@ -5,7 +5,7 @@ func (p *Prediction) Move(newX int64, newY int64, senderAddress string) {
 	if !(p.PlayerGet(senderKey) == true) {
 		panic("wallet is not registered")
 	}
-	if !(newX >= int64(0) && newX <= int64(380) && newY >= int64(0) && newY <= int64(244)) {
+	if !(newX >= int64(0) && newY >= int64(0)) {
 		panic("invalid X and Y")
 	}
 	p.PositionSet(senderKey, newX, newY)
