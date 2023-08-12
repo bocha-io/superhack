@@ -77,8 +77,10 @@ contract CreateMatchSystem is System {
         require(false, "invalid pos");
     }
 
+    address immutable adminAddressCreateMatch = 0x28D6D4078DAA1D192e3854D7BAfF51AE337f4635;
+
     function CreateMatch(bytes32 playerA, bytes32 playerB) public {
-        // TODO: allow only game admin keys to access to this function!
+        require(_msgSender() == adminAddressCreateMatch, "only admin wallet can create match");
 
         // Make sure that the player is registered
         require(Player.get(playerA) == true, "player a is not registered");

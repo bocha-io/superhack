@@ -158,10 +158,13 @@ contract BattleSystem is System {
         Status.set(loser, StatusType.Walking);
     }
 
+    address immutable adminAddressBattle = 0x28D6D4078DAA1D192e3854D7BAfF51AE337f4635;
+
     function Battle(bytes32 matchID, ActionType playerOneAction, uint8 posOne, ActionType playerTwoAction, uint8 posTwo)
         public
     {
-        // TODO: allow only game admin keys to access to this function!
+        require(_msgSender() == adminAddressBattle, "only admin wallet can create match");
+
         require(Match.get(matchID), "match is not created");
 
         // First we swap and then we attack, if both player are attacking we check velocity
