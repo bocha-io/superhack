@@ -142,11 +142,11 @@ func (b *Backend) HandleMessage(
 		}
 
 	case InventoryMessageType:
-		if response, err := b.inventoryMessage(ws, p); err != nil {
+		response, err := b.inventoryMessage(ws, p)
+		if err != nil {
 			return err
-		} else {
-			return messages.WriteJSON(ws.Conn, ws.ConnMutex, response)
 		}
+		return messages.WriteJSON(ws.Conn, ws.ConnMutex, response)
 
 	case SwapMessageType:
 		if response, err := b.swapMessage(ws, p); err != nil {
