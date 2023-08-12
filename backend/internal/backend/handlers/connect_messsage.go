@@ -7,6 +7,7 @@ import (
 
 	"github.com/bocha-io/game-backend/x/messages"
 	"github.com/bocha-io/logger"
+	"github.com/bocha-io/superhack/internal/constants"
 )
 
 type ConnectMessage struct {
@@ -91,7 +92,7 @@ func (b *Backend) connectMessage(
 			),
 		)
 
-		_, err = b.txBuilder.InteractWithContract(index, "register")
+		_, err = b.txBuilder.InteractWithContract(constants.WorldContractName, index, "register")
 		if err != nil {
 			logger.LogError(
 				fmt.Sprintf("[backend] error registering wallet %s, %s", address, err.Error()),

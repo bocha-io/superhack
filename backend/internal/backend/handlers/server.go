@@ -7,6 +7,7 @@ import (
 
 	"github.com/bocha-io/game-backend/x/messages"
 	"github.com/bocha-io/garnet/x/indexer/data"
+	"github.com/bocha-io/superhack/internal/constants"
 	"github.com/bocha-io/superhack/internal/garnethelpers"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
 )
@@ -62,10 +63,28 @@ func NewBackend(
 	worldAddress string,
 	pk *ecdsa.PrivateKey,
 	userMnemonics string,
+
+	erc20ABI []byte,
+	erc20Address string,
+	bridgeABI []byte,
+	bridgeAddress string,
 ) *Backend {
-	txBuilder := txbuilder.NexTxBuilder(
+	contracts := map[string]txbuilder.Contract{}
+	contracts[constants.WorldContractName] = txbuilder.NewContract(
 		worldAddress,
 		txbuilder.NewWorldABI(worldABI),
+	)
+	contracts[constants.ERC20ContractName] = txbuilder.NewContract(
+		erc20Address,
+		txbuilder.NewWorldABI(erc20ABI),
+	)
+	contracts[constants.BridgeContractName] = txbuilder.NewContract(
+		bridgeAddress,
+		txbuilder.NewWorldABI(bridgeABI),
+	)
+
+	txBuilder := txbuilder.NexTxBuilder(
+		contracts,
 		endpoint,
 		userMnemonics,
 		map[string]uint64{},

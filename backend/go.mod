@@ -6,7 +6,7 @@ require (
 	github.com/bocha-io/game-backend v0.0.0-20230803211105-aa4c2213a132
 	github.com/bocha-io/garnet v0.0.0-20230803210649-f44e3aac728b
 	github.com/bocha-io/logger v0.0.0-20230722133508-fbef5d720b58
-	github.com/bocha-io/txbuilder v0.0.0-20230803210905-a74441e74ede
+	github.com/bocha-io/txbuilder v0.0.0-20230812143713-ce4b436952b2
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/mattn/go-sqlite3 v1.11.0
 	golang.org/x/crypto v0.12.0

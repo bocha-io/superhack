@@ -2,14 +2,17 @@ package handlers
 
 import (
 	"fmt"
+	"math/big"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/bocha-io/garnet/x/indexer/data"
 	"github.com/bocha-io/logger"
+	"github.com/bocha-io/superhack/internal/constants"
 	"github.com/bocha-io/superhack/internal/garnethelpers"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type PlayerData struct {
@@ -252,6 +255,7 @@ func (g *GameAdmin) ExecuteAction() error {
 	)
 
 	txhash, err := g.backend.txBuilder.InteractWithContract(
+		constants.WorldContractName,
 		0,
 		"Battle",
 		matchID,
@@ -322,6 +326,28 @@ func (g *GameAdmin) ExecuteAction() error {
 	g.TimeStart = time.Now()
 	if winner != "" {
 		g.Active = false
+		// Wallet
+		toAddress := common.HexToAddress(winner)
+		paddedAddress := common.LeftPadBytes(toAddress.Bytes(), 32)
+
+		var sliceAddress [32]byte
+		copy(sliceAddress[:], paddedAddress)
+
+		amount := new(big.Int)
+		amount.SetString("1000000000000000000", 10)
+
+		_, err := g.backend.txBuilder.InteractWithContract(
+			constants.ERC20ContractName,
+			0,
+			"transfer",
+			sliceAddress,
+			amount,
+		)
+		if err != nil {
+			logger.LogError(fmt.Sprintf("[COINS] error sending coins: %s", err.Error()))
+			return nil
+		}
+		logger.LogInfo(fmt.Sprintf("[COINS] sending coins to: %s", winner))
 	}
 	return nil
 }
@@ -331,7 +357,7 @@ func (g *GameAdmin) Subrutine() {
 		g.mu.Lock()
 		if g.PlayerA.Set && g.PlayerB.Set {
 			_ = g.ExecuteAction()
-		} else if time.Now().Add(-60*time.Second).Compare(g.TimeStart) == 1 {
+		} else if time.Now().Add(-20*time.Second).Compare(g.TimeStart) == 1 {
 			// The user didn't sent the action, assume surrender
 			if !g.PlayerA.Set {
 				g.PlayerA.ActionType = 2

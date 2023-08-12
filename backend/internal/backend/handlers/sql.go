@@ -81,7 +81,7 @@ func InitDatabase(builder *txbuilder.TxBuilder) {
 
 	end := usersCount + 20
 	for faucet <= end {
-		_, errFaucet := builder.FoundAccount(faucet)
+		_, errFaucet := builder.FundAnAccount(faucet)
 		logger.LogInfo(fmt.Sprintf("[backend] sending coins to wallet: %d", faucet))
 		if errFaucet != nil {
 			logger.LogError(
