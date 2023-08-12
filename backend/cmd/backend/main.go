@@ -58,5 +58,23 @@ func main() {
 		panic("BRIDGEADDRESS env var is missing")
 	}
 
-	backend.Run(int(port), pk, worldID, blockchain, mnemonicString, erc20Address, bridgeAddress)
+	startingHeight := os.Getenv("STARTINGHEIGHT")
+	startingHeightInt := uint64(0)
+	if startingHeight != "" {
+		startingHeightInt, err = strconv.ParseUint(startingHeight, 10, 64)
+		if err != nil {
+			panic("STARTINGHEIGHT is invalid")
+		}
+	}
+
+	backend.Run(
+		int(port),
+		pk,
+		worldID,
+		blockchain,
+		mnemonicString,
+		erc20Address,
+		bridgeAddress,
+		startingHeightInt,
+	)
 }

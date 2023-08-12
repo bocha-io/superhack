@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	_ "embed"
 	"fmt"
+	"time"
 
 	server "github.com/bocha-io/game-backend/x"
 	"github.com/bocha-io/garnet/x/indexer"
@@ -30,6 +31,7 @@ func Run(
 	usersMnemonics string,
 	erc20Address string,
 	bridgeAddress string,
+	startingHeight uint64,
 ) {
 	// Log to file
 	file := logger.LogToFile("indexerlogs.log")
@@ -39,7 +41,7 @@ func Run(
 	quit := false
 	database := data.NewDatabase()
 	database.SetDefaultWorld(worldID)
-	go indexer.Process(endpoint, database, &quit)
+	go indexer.Process(endpoint, database, &quit, startingHeight, 2*time.Second)
 	_, b, _ := txbuilder.GetWallet(usersMnemonics, 0)
 	logger.LogInfo(fmt.Sprintf("[ADMIN] admin wallet is: %s", b.Address.Hex()))
 
