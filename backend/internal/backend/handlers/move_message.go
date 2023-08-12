@@ -6,6 +6,7 @@ import (
 
 	"github.com/bocha-io/game-backend/x/messages"
 	"github.com/bocha-io/garnet/x/indexer/data"
+	"github.com/bocha-io/superhack/internal/constants"
 	"github.com/bocha-io/superhack/internal/garnethelpers"
 )
 
@@ -75,7 +76,13 @@ func (b *Backend) moveMessage(
 	prediction := garnethelpers.NewPrediction(b.db)
 	prediction.Move(int64(moveMsg.X), int64(moveMsg.Y), ws.WalletAddress)
 
-	txhash, err := b.txBuilder.InteractWithContract(ws.WalletID, "Move", moveMsg.X, moveMsg.Y)
+	txhash, err := b.txBuilder.InteractWithContract(
+		constants.WorldContractName,
+		ws.WalletID,
+		"Move",
+		moveMsg.X,
+		moveMsg.Y,
+	)
 	if err != nil {
 		value := fmt.Errorf("error sending move tx")
 		return newMoveMessageError(value), value

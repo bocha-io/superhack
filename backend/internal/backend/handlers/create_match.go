@@ -6,6 +6,7 @@ import (
 
 	"github.com/bocha-io/garnet/x/indexer/data"
 	"github.com/bocha-io/logger"
+	"github.com/bocha-io/superhack/internal/constants"
 	"github.com/bocha-io/superhack/internal/garnethelpers"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
 )
@@ -83,7 +84,13 @@ func createMatch(
 	prediction := garnethelpers.NewPrediction(b.db)
 	prediction.CreateMatch(paddedPlayerA, paddedPlayerB)
 
-	txhash, err := b.txBuilder.InteractWithContract(0, "CreateMatch", playerABytes, playerBBytes)
+	txhash, err := b.txBuilder.InteractWithContract(
+		constants.WorldContractName,
+		0,
+		"CreateMatch",
+		playerABytes,
+		playerBBytes,
+	)
 	if err != nil {
 		value := fmt.Errorf("error sending creatematch tx")
 		return newCreateMatchMessageError(value), value

@@ -8,6 +8,7 @@ import (
 
 	"github.com/bocha-io/garnet/x/indexer/data"
 	"github.com/bocha-io/logger"
+	"github.com/bocha-io/superhack/internal/constants"
 	"github.com/bocha-io/superhack/internal/garnethelpers"
 	"github.com/bocha-io/txbuilder/x/txbuilder"
 )
@@ -252,6 +253,7 @@ func (g *GameAdmin) ExecuteAction() error {
 	)
 
 	txhash, err := g.backend.txBuilder.InteractWithContract(
+		constants.WorldContractName,
 		0,
 		"Battle",
 		matchID,
@@ -322,6 +324,7 @@ func (g *GameAdmin) ExecuteAction() error {
 	g.TimeStart = time.Now()
 	if winner != "" {
 		g.Active = false
+		// g.backend.tx
 	}
 	return nil
 }

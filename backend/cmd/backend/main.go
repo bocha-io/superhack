@@ -48,5 +48,15 @@ func main() {
 		panic("MNEMONIC env var is missing")
 	}
 
-	backend.Run(int(port), pk, worldID, blockchain, mnemonicString)
+	erc20Address := os.Getenv("ERC20ADDRESS")
+	if erc20Address == "" {
+		panic("ERC20ADDRESS env var is missing")
+	}
+
+	bridgeAddress := os.Getenv("BRIDGEADDRESS")
+	if bridgeAddress == "" {
+		panic("BRIDGEADDRESS env var is missing")
+	}
+
+	backend.Run(int(port), pk, worldID, blockchain, mnemonicString, erc20Address, bridgeAddress)
 }
