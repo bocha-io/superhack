@@ -146,7 +146,7 @@ contract BattleSystem is System {
             }
         }
 
-        return res != 0;
+        return res == 0;
     }
 
     function endGame(bytes32 matchID, bytes32 winner, bytes32 loser) internal {
