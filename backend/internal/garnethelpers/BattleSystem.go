@@ -91,7 +91,7 @@ func (p *Prediction) checkIfGameHasEnded(playerID string, monDead string) bool {
 	if thirdMon != monDead {
 		res = res + p.MonHpGet(thirdMon)
 	}
-	return res != int64(0)
+	return res == int64(0)
 }
 
 func (p *Prediction) endGame(matchID string, winner string, loser string) {
