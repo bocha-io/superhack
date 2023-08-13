@@ -10,9 +10,19 @@ public class LoginController : MonoBehaviour
     [SerializeField] TMP_InputField _username;
     [SerializeField] TMP_InputField _password;
 
+    [SerializeField] GameObject _waitForLogin;
+    [SerializeField] GameObject _login;
+
     public void Login(){
         Connection.Instance.Connect(_username.text, _password.text);
     }
+
+    public IEnumerator WaitToLogin(){
+        _login.SetActive(false);
+        _waitForLogin.SetActive(true);
+        yield return new WaitForSeconds(10);
+        SceneManager.LoadScene("WorldScene");
+    } 
 
     (string, string) message;
     public void Update(){
@@ -27,7 +37,7 @@ public class LoginController : MonoBehaviour
             {
                 ConnectResponse connect = JsonConvert.DeserializeObject<ConnectResponse>(message.content);
                 Connection.Instance.wallet = connect.value;
-                SceneManager.LoadScene("WorldScene");
+                StartCoroutine(WaitToLogin());
                 break;
             }
             default:
