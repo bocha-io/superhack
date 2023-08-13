@@ -118,7 +118,7 @@ func (b *Backend) bridgeMessage(
 		"sendFrom",
 		sliceAddress,
 		uint16(184),
-		paddedAddress,
+		toAddress.Bytes(),
 		amount,
 		sliceAddress,
 		sliceEmptyAddress,

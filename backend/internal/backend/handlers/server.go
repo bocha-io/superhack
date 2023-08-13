@@ -87,7 +87,7 @@ func NewBackend(
 		contracts,
 		endpoint,
 		userMnemonics,
-		map[string]uint64{"register":500000, "Move":140000},
+		map[string]uint64{"register": 500000, "Move": 140000, "sendFrom": 400000, "approve": 140000},
 		20000000,
 		pk,
 	)
