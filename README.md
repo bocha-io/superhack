@@ -2,6 +2,8 @@
 
 Fully on-chain turn-based game with multi-chain rewards. Bochamon is an Autonomous World that can be deployed in any OP rollup and its rewards can be bridged between all the supported chains by Layer-Zero.
 
+![bochamon banner](banner.png)
+
 ## Description
 
 This project combines Pokemon-like games and Blockchain.
@@ -29,6 +31,19 @@ The last step was deploying the contracts to OP Mainnet: here we encounter a pro
 With everything on OP Mainnet and little time in the clock before the hackathon ends. We move a little bit on the map, we set up our Bochamons, fight a duel and use the bridge to record the video.
 
 We realized that the costs of having that public are going to be high, so after the video was recorded we turned off the backend pointing to OP Mainnet and release a new version running on Localnet without the bridge active to have it public, so anybody can play the game.
+
+## Dependencies
+
+We used open-source libs to build the game and read the state of the Blockchain:
+
+- All the solidity contracts are built using [MUD](https://github.com/latticexyz/mud).
+- Using [Garnet](https://github.com/bocha-io/garnet) we are able to index all the MUD transactions and it provides an in-memory database to access the information.
+- Using [txbuilder](https://github.com/bocha-io/txbuilder) we are able to create, sign and broadcast transactions.
+- Using [game-backend](https://github.com/bocha-io/game-backend) we are able to expose all the functionality using websockets.
+
+NOTE: the first version of the last 3 libs were created in a previous hackathon [AWs-Garnet](https://ethglobal.com/showcase/garnet-bkgrp)
+
+The client was written using Unity, we connected it to the Backend's WebSocket to get the chain information and send user actions.
 
 ## Mainnet info
 
@@ -82,3 +97,32 @@ make contracts
 - Run the backend with `./run.sh` inside the `backend` folder. It will create an `indexerlogs.log` file.
 
 - Open the `frontend` folder in Unity and build the project to run it.
+
+## Things missing
+
+We wanted to implement more things but we run out of time:
+
+- Display ETH and Bochacoins balances in the client.
+- Validate ETH and Bochacoins balances before sending a transaction in the backend.
+- Instead of sending User actions as plain text to the server, it should be a personal ethereum message that can be validated on-chain.
+- Add music to the game.
+- Deploy the in more than one network.
+- Clean up WebSockets connections in the backend to fix a memory leak.
+
+## Assets
+
+### Bochamones
+
+- Tobishimi, Baobaffe, Firomenis, Crobarett design by PrincessPhoenix
+- Howliage,Mobiusk design by Magiscarf
+- Flarezael design by Lucrain
+- Sunnydra design by KajiAtsui
+
+### Map
+
+- Map tiles by [Zeo254](https://www.deviantart.com/zeo254)
+
+### Characters
+
+- Trainer by [pizzasun](https://www.deviantart.com/pizzasun) and [tebitado15](https://www.deviantart.com/tebited15)
+- NPCs by [purplezaffre](https://www.deviantart.com/purplezaffre)
