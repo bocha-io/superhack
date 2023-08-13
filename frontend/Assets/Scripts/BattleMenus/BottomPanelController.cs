@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 public enum PanelState {
     ShowingText,
@@ -25,40 +26,111 @@ public class BottomPanelController : MonoBehaviour
     [SerializeField] SpriteRenderer _enemyBochamonSprite;
 
     public PanelState currentState;
+    Player _myself;
 
     public void InitialSetup(Player me, Bochamon _enemy){
         // Setup Actions?
         // Setup Moves
         // Setup bochamons
         SetupPlayer(me);
-        SetupMyBochamon(me.bochamons[0]);
-        SetupEnemyBochamon(_enemy);
+        StartCoroutine(SetupMyBochamon(me.bochamons[0]));
+        StartCoroutine(SetupEnemyBochamon(_enemy));
+    }
+
+    public void ExitBattle(bool victory){
+    }
+
+    public void ForceBochamonChange(){
+        _myBochamonSprite.gameObject.transform.DOLocalMoveY(-4f, 0.2f);
+        _bochamonMenu.canGoBack = false;
+        _bochamonMenu.Setup(_myself.bochamons);
+        ChangeState(PanelState.BochamonMenu);
+    }
+
+    public void DefeatEnemyBochamon(){
+        _enemyBochamonSprite.gameObject.transform.DOLocalMoveY(-4f, 0.2f);
     }
 
     public void SetupPlayer(Player player){    
+        _myself = player;
         _bochamonMenu.Setup(player.bochamons);
     }
 
-    public void SetupMyBochamon(Bochamon bochi){
+    public IEnumerator SetupMyBochamon(Bochamon bochi){
         // Setup UI
+        if (_myBochamon.bochamon != null && bochi.uuid == _myBochamon.bochamon.uuid)
+            yield break;
+        ChangeState(PanelState.ShowingText);
+        StartCoroutine(_battleInfo.ShowText("Sending out " + bochi.bochaName));
+        yield return new WaitForSeconds(1.5f);
         _myBochamon.Setup(bochi);
         _fightMenu.Setup(bochi.moves);
+        
         _myBochamonSprite.sprite = bochi.sprite;
+        _myBochamonSprite.transform.position = new Vector3(-5.42f, 0.701f, _myBochamonSprite.transform.position.z);
+        _myBochamonSprite.transform.DOLocalMoveX(_myBochamonSprite.transform.position.x+3, 0.5f);
+        yield return new WaitForSeconds(1.5f);
         // Setup Moves 
     }
 
-    public void SetupEnemyBochamon(Bochamon bochi){
+    public IEnumerator MyBochamonWasDefeated(){
+        yield break;
+    }
+
+    public IEnumerator EnemyBochamonWasDefeated(){
+        yield break;
+    }
+
+    public IEnumerator SetupEnemyBochamon(Bochamon bochi){
         // Setup UI
+        if (_enemyBochamon.bochamon != null && bochi.uuid == _enemyBochamon.bochamon.uuid)
+            yield break;
+        ChangeState(PanelState.ShowingText);
+        StartCoroutine(_battleInfo.ShowText("Enemy is Sending out " + bochi.bochaName));
+        yield return new WaitForSeconds(1.5f);
         _enemyBochamon.Setup(bochi);
         _enemyBochamonSprite.sprite = bochi.sprite;
+        _enemyBochamonSprite.transform.position = new Vector3(5.33f, 1.14f, _enemyBochamonSprite.transform.position.z);
+        _enemyBochamonSprite.transform.DOLocalMoveX(_enemyBochamonSprite.transform.position.x-3, 0.5f);
+        yield return new WaitForSeconds(1.5f);
     }
 
-    public void ApplyDamageOnSelf(int damage){
+    public IEnumerator ApplyDamageOnSelf(int damage){
+        ChangeState(PanelState.ShowingText);
+        StartCoroutine(_battleInfo.ShowText("Enemy attacked us for " + damage.ToString() + " damage "));
+        _myBochamonSprite.DOFade(0,0.1f).SetLoops(8, LoopType.Yoyo);
+        yield return new WaitForSeconds(1.5f);
         _myBochamon.ApplyDamage(damage);
+        yield return new WaitForSeconds(1.5f);
     }
 
-    public void ApplyDamageOnEnemy(int damage){
+    public IEnumerator ApplyDamageOnEnemy(int damage){
+        ChangeState(PanelState.ShowingText);
+        StartCoroutine(_battleInfo.ShowText("We caused " + damage.ToString() + " damage to enemy bochamon!"));
+        _enemyBochamonSprite.DOFade(0,0.1f).SetLoops(8, LoopType.Yoyo);
+        yield return new WaitForSeconds(1.5f);
         _enemyBochamon.ApplyDamage(damage);
+        yield return new WaitForSeconds(1.5f);
+    }
+
+    public void ShowWaitingForOponnent(){
+        ChangeState(PanelState.ShowingText);
+        _battleInfo.ShowPermanentText("Waiting for opponent...");
+    }
+
+    public void ShowBattleResult(bool victory){
+        ChangeState(PanelState.ShowingText);
+        string text = "You lost the battle";
+        if (victory){
+            text = "You won the battle";
+        }
+        _battleInfo.ShowPermanentText(text);
+    }
+
+    public void OpenBochamon(){
+        _bochamonMenu.Setup(_myself.bochamons);
+        _bochamonMenu.canGoBack = true;
+        ChangeState(PanelState.BochamonMenu);
     }
 
     public void ChangeState(PanelState state){
@@ -83,6 +155,7 @@ public class BottomPanelController : MonoBehaviour
             }
             case PanelState.BochamonMenu:
             {
+                _bochamonMenu.Setup(_myself.bochamons);
                 break;
             }
             default:

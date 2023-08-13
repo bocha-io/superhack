@@ -9,7 +9,7 @@ public class BochamonInfo : MonoBehaviour
     [SerializeField] TextMeshProUGUI _speed;
     public void Setup(Bochamon bocha){
         _type.text = bocha.bochaType.ToString();
-        _hp.text = bocha.maxHp.ToString();
+        _hp.text = bocha.currentHp.ToString();
         _speed.text = bocha.speed.ToString();
     }
 }

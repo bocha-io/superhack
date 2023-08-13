@@ -1,5 +1,85 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2017922239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2017922240}
+  - component: {fileID: 2017922242}
+  - component: {fileID: 2017922241}
+  m_Layer: 0
+  m_Name: InteractCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2017922240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017922239}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5598537086694836854}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &2017922242
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017922239}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
+--- !u!50 &2017922241
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017922239}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 1
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
 --- !u!1 &5598537085501878286
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,7 +347,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5598537086694836856}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1.67}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -277,6 +357,7 @@ Transform:
   - {fileID: 5598537085990433916}
   - {fileID: 5598537086007106989}
   - {fileID: 5598537086880675293}
+  - {fileID: 2017922240}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -321,7 +402,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 100
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 291466770, guid: 3daf8c20ccb3f984587df854219bf0e1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -345,6 +426,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 5598537086694836852}
+  _colliderUp: {fileID: 5598537086007106991}
+  _colliderDown: {fileID: 5598537086880675295}
+  _colliderLeft: {fileID: 5598537085990433918}
+  _colliderRight: {fileID: 5598537085501878287}
+  _interactCollider: {fileID: 2017922242}
+  inWorld: 1
+  _worldUI: {fileID: 0}
+  bochamons: []
+  _bochamonsPrefabs:
+  - {fileID: 139251787685538355, guid: 5ba1d3342aebb3b4684607f2cb0673ce, type: 3}
+  - {fileID: 2674783651023872797, guid: d6aea5760e310f040ab4b98cf1eaf85d, type: 3}
+  - {fileID: 242393918015672484, guid: b80e4e0a14878f64fb62f95f297e68c7, type: 3}
+  - {fileID: 7337399148129493829, guid: 7d7e7e64f4cf6b64db9df442a9784c43, type: 3}
+  - {fileID: 5619504591897534518, guid: f250606ed0272a74893bd979d9a91f0f, type: 3}
+  - {fileID: 4862025505841612646, guid: e305cd9461c03cc43b39162c8a6226af, type: 3}
+  - {fileID: 381900179565122945, guid: 1a36334301e2f254fbcdf954e323cdd4, type: 3}
+  - {fileID: 3361519835657300059, guid: 10bd8115d8ce43c49926685dc514e338, type: 3}
+  - {fileID: 5291317819833499353, guid: d05cc74631de1824ca31458870dd02b6, type: 3}
 --- !u!114 &5598537086694836852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -357,6 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1c8e8f0b06ada548afc161e3ebd0da7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  _animator: {fileID: 3082837924886170973}
 --- !u!95 &3082837924886170973
 Animator:
   serializedVersion: 5

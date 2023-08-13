@@ -48,12 +48,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
   moves:
   - {fileID: 139251786488955701}
   - {fileID: 139251786768045166}
   - {fileID: 139251787998180247}
   - {fileID: 139251787734310065}
   sprite: {fileID: 21300000, guid: aaa5a41cc80477340b6e3774f390b2c4, type: 3}
+  greySprite: {fileID: 21300000, guid: fd1bb2eb6a35e7a4caa71b76cf784647, type: 3}
   bochaName: Cobarett
   bochaType: 2
   maxHp: 350

@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 6
   moves:
   - {fileID: 381900180426194055}
   - {fileID: 381900180683975644}
   - {fileID: 2539680087949686192}
   - {fileID: 1727200452602327897}
   sprite: {fileID: 21300000, guid: d0962e59309897849b90f443b6c911b1, type: 3}
+  greySprite: {fileID: 21300000, guid: a160013fc2cd7c8429b166fddc2d6525, type: 3}
   bochaName: Tobishimi
   bochaType: 1
   maxHp: 400

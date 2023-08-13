@@ -10,13 +10,18 @@ public class BattleInfo : MonoBehaviour
 
     [SerializeField] BottomPanelController _panel;
 
-    public void OnEnable(){
-        StartCoroutine(ShowText());
+    public void Start(){
+        StartCoroutine(ShowText("Trainer wants to battle"));
     }
-    public IEnumerator ShowText(){
-        yield return new WaitForSeconds(1);
-        // callback;'
+    public IEnumerator ShowText(string text){
+        _text.text = text;
+        yield return new WaitForSeconds(3);
+        // callback()
         _panel.ChangeState(PanelState.PickingAction);
+    }
+
+    public void ShowPermanentText(string text){
+        _text.text = text;
     }
 
 }

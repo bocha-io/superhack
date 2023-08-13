@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 7
   moves:
   - {fileID: 870138963184551475}
   - {fileID: 8083618555005896592}
   - {fileID: 1543545485981168755}
   - {fileID: 1275926531732685162}
   sprite: {fileID: 21300000, guid: c2e6837c80f3e104aa463ae83fcdf0a9, type: 3}
+  greySprite: {fileID: 21300000, guid: f2b5284ecaead3948854e7cc8df1b9ca, type: 3}
   bochaName: Mobiusk
   bochaType: 1
   maxHp: 300

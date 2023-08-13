@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 1
   moves:
   - {fileID: 4925304361841081103}
   - {fileID: 9068911702214451847}
   - {fileID: 1733198751130479837}
   - {fileID: 5514982717035124727}
   sprite: {fileID: 21300000, guid: 1e0fee57a3979b14b98f32f37a379408, type: 3}
+  greySprite: {fileID: 21300000, guid: 53b6f09aeb53baf4faec1bb82e1202b9, type: 3}
   bochaName: Flarezael
   bochaType: 2
   maxHp: 450

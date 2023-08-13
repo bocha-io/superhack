@@ -8,6 +8,7 @@ public class PerformMoveAction : MenuOptionAction
     public int number;
     public override void Execute(){
         // _battleMaster.
+        _battleMaster.SendMove(number);        
         Debug.Log("Send Action " + number);
     }
 }

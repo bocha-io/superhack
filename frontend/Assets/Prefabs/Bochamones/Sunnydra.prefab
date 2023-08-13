@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 5
   moves:
   - {fileID: 4337509220317772356}
   - {fileID: 7792796690227716870}
   - {fileID: 8018312733912948840}
   - {fileID: 8547852966269167705}
   sprite: {fileID: 21300000, guid: 9ab6ca11a06097c45bc3e142dc5d554d, type: 3}
+  greySprite: {fileID: 21300000, guid: 2921cecc559e66849bc3e48b14d17777, type: 3}
   bochaName: Sunnydra
   bochaType: 3
   maxHp: 420

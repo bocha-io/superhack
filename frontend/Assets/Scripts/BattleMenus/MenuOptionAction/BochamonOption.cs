@@ -24,7 +24,10 @@ public class BochamonOption : MenuOption
 
     public void Setup(Bochamon bochamon){
         _bochamon = bochamon;
-        _bochamonImage.sprite = bochamon.sprite;
+        Debug.Log("Bochamon has " + bochamon.currentHp.ToString());
+        if (bochamon.currentHp > 0)
+            _bochamonImage.sprite = bochamon.sprite;
+        else _bochamonImage.sprite = bochamon.greySprite;
         base.Setup(bochamon.bochaName);
     }
 }

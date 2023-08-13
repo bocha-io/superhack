@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 4
   moves:
   - {fileID: 6027042920482306670}
   - {fileID: 9019146528097987002}
   - {fileID: 154334330731107021}
   - {fileID: 6618929139541888819}
   sprite: {fileID: 21300000, guid: 845068c5190071a478339674eff42198, type: 3}
+  greySprite: {fileID: 21300000, guid: 360a2e2c03f33154993b42cbe3c8c1f2, type: 3}
   bochaName: Howliage
   bochaType: 3
   maxHp: 350

@@ -28,7 +28,7 @@ public class HPController : MonoBehaviour
     public void SetHp(int currentHp){
         _currentHpText.text = currentHp.ToString();
         float size = (float)_currentHp/(float)_maxHp;
-        _hpbar.gameObject.transform.DOScaleX(size, 0.3f);// = new Vector3(size, 1, 1);
+        _hpbar.gameObject.transform.DOScaleX(size, 1f);// = new Vector3(size, 1, 1);
         if (size > 0.5f){
             _hpbar.color = Color.green;
         } else if (size < 0.15f){
