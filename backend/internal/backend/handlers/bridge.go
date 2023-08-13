@@ -72,6 +72,11 @@ func (b *Backend) bridgeMessage(
 		return newBridgeMessageError(err), err
 	}
 
+	bridgeAddress := common.HexToAddress("0xE77710Ae15c5F9F1b8E31135ca4f5FBe5bEc2097")
+	paddedBridgeAddress := common.LeftPadBytes(bridgeAddress.Bytes(), 32)
+	var sliceBridgeAddress [32]byte
+	copy(sliceBridgeAddress[:], paddedBridgeAddress)
+
 	toAddress := common.HexToAddress(ws.WalletAddress)
 	paddedAddress := common.LeftPadBytes(toAddress.Bytes(), 32)
 
@@ -93,7 +98,7 @@ func (b *Backend) bridgeMessage(
 		ws.WalletID,
 		big.NewInt(0),
 		"approve",
-		sliceAddress,
+		sliceBridgeAddress,
 		amount,
 	)
 	if err != nil {
