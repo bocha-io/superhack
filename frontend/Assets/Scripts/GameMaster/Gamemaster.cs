@@ -78,8 +78,15 @@ public class Gamemaster : MonoBehaviour
             case "inventoryresponse":
             {
                 InventoryResponse inventoryResponse = JsonConvert.DeserializeObject<InventoryResponse>(message.content);
-                // UI canje realizado
-                _mainPlayer.SetBochamons(inventoryResponse);
+                
+                if (inventoryResponse.value != null && inventoryResponse.value.Length!=0){
+                    // UI canje realizado
+                    _mainPlayer.SetBochamons(inventoryResponse);
+                }
+                else {
+                    // ask again in 5
+                    StartCoroutine(SendInventory());
+                }
                 break;
             }
             case "mapstatus":

@@ -146,6 +146,9 @@ public class PlayerController : MonoBehaviour
 
     void Interact(){
         if ( _interactCollider.IsTouchingLayers(interactMask)){
+            if (bochamons.Count == 0){
+                return;
+            }
             List<Collider2D> results = new List<Collider2D>();
             ContactFilter2D cf = new ContactFilter2D();
             cf.SetLayerMask(interactMask);
