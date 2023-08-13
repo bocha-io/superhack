@@ -28,6 +28,7 @@ public class WorldCanvasController : MonoBehaviour
     }
 
     public void OpenBochamonTrade(){
+        _trades.enable = true;
         _trades.Setup(_player.bochamons);
         _trades.gameObject.SetActive(true);
         _tradeCanvas.SetActive(true);
