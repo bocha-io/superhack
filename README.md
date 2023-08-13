@@ -32,6 +32,16 @@ With everything on OP Mainnet and little time in the clock before the hackathon 
 
 We realized that the costs of having that public are going to be high, so after the video was recorded we _turned off the backend_ pointing to OP Mainnet and release a new version _running on Localnet_ without the bridge active to have it public, so anybody can _play the game_.
 
+## How to play it
+
+Controls:
+
+- You can move your character using `WASD`.
+- Interact with objects: `F`
+- Cancel action with: `G`
+
+You can play the game now at [https://superhack.bocha.io/](https://superhack.bocha.io/). (It's the _Testnet_ version)
+
 ## Dependencies
 
 We used _open-source_ libs to build the game and read the state of the Blockchain:
