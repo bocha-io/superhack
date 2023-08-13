@@ -98,9 +98,9 @@ public class Gamemaster : MonoBehaviour
             case "bridgeresponse":
             {
                 BridgeMessageResponse bridgeMessageResponse = JsonConvert.DeserializeObject<BridgeMessageResponse>(message.content);
-                if (bridgeMessageResponse.value != null && bridgeMessageResponse.value != ""){
-                    Application.OpenURL("https://optimistic.etherscan.io/tx/"+bridgeMessageResponse.value);
-                }
+                // if (bridgeMessageResponse.value != null && bridgeMessageResponse.value != ""){
+                //     Application.OpenURL("https://optimistic.etherscan.io/tx/"+bridgeMessageResponse.value);
+                // }
                 break;
             }
             case "move":
