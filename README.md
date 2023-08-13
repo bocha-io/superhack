@@ -1,40 +1,40 @@
 # Bochamon - ethglobal.com (superhack)
 
-Fully on-chain turn-based game with multi-chain rewards. Bochamon is an Autonomous World that can be deployed in any OP rollup and its rewards can be bridged between all the supported chains by Layer-Zero.
+_Fully on-chain turn-based_ game with multi-chain rewards. Bochamon is an _Autonomous World_ that can be deployed in any OP rollup and its rewards can be bridged between all the supported chains by _Layer-Zero_.
 
 ![bochamon banner](banner.png)
 
 ## Description
 
-This project combines Pokemon-like games and Blockchain.
+This project combines _Pokemon-like_ games and _Blockchain_.
 
-While playing this game your current position on the map is stored in the blockchain and updated after every move, you can pick your Bochamons and set up your team (also registered in the blockchain) and you can fight other players (every action is also a blockchain transaction).
+While playing this game your current position on the map is stored in the blockchain and _updated after every move_, you can pick your Bochamons and _set up your team_ (also registered in the blockchain) and you can _fight other players_ (every action is also a blockchain transaction).
 
-After winning a duel, you get rewarded in BochaCoins. These coins are deployed as an ERC20 contract in OP Mainnet and we set up a bridge to Base with the Layer-Zero. Talking with the Exchange NPC allows you to bridge the coins!
+After winning a duel, you get _rewarded in BochaCoins_. These coins are deployed as an ERC20 contract in OP Mainnet and we set up a bridge to Base with the Layer-Zero. Talking with the Exchange NPC allows you to _bridge_ the coins!
 
-Our initial idea was to deploy it also to Base Mainnet and Zora, so you can move your BochaCoins between all the chains, but the cost of deploying to Mainnet the contracts was too high.
+Our initial idea was to deploy it also to _Base Mainnet_ and _Zora_, so you can move your BochaCoins between all the chains, but the cost of deploying to Mainnet the contracts was too high.
 
 ## How it's made
 
-The first step to build this project was deciding what lib we were going to use to create the game contracts. We already have experience using MUD so we decided to use it for this project, it also allows us to use the open-source lib Garnet to create the backend that integrates automatically with MUD.
+The first step to build this project was deciding what lib we were going to use to create the game contracts. We already have experience using _MUD_ so we decided to use it for this project, it also allows us to use the open-source lib _Garnet_ to create the backend that integrates automatically with MUD.
 
-With the idea of building the game using MUD, we deployed a Testnet for local development, we started to look for free assets for the game and set up a Unity project to have a game client.
+With the idea of building the game using MUD, we deployed a Testnet for local development, we started to look for _free assets_ for the game and set up a _Unity project_ to have a game client.
 
-To connect the Blockchain with Unity we needed a backend, and we created one in GoLang. This backend provides a WebSocket connection to the Unity client. Connecting to that Websocket the clients can read the state of the game, send transactions and register new users.
+To connect the Blockchain with Unity we needed a _backend_, and we created one in _Go_. This backend provides a WebSocket connection to the Unity client. Connecting to that Websocket the clients can _read the state_ of the game, _send transactions_ and _register_ new users.
 
-One of our goals was to make the game multi-chain so we make a quick demo with Layer-Zero connecting OP Mainnet and Base to send ERC20 between both chains, it took some time but we were able to make it work. After that, we just needed to add the new message to the backend and create the same transaction programmatically there.
+One of our goals was to make the game multi-chain so we make a quick demo with _Layer-Zero_ connecting _OP Mainnet_ and _Base_ to send ERC20 between both chains, it took some time but we were able to make it work. After that, we just needed to add the new message to the backend and create the same transaction programmatically there.
 
-At this point we have everything ready to deploy to OP Mainnet, so we create a free account at Alchemy to have a rest endpoint available, and we bridge some ETH to OP Mainnet.
+At this point we have everything ready to deploy to OP Mainnet, so we create a free account at _Alchemy_ to have a rest endpoint available, and we _bridge_ some ETH to OP Mainnet.
 
-The last step was deploying the contracts to OP Mainnet: here we encounter a problem, MUD's deployment scripts were breaking when connecting to OP Mainnet. We found out that the issue was that the contracts were too big to estimate the gas consumption using the rest endpoints, we "hack" the node_modules folder and hardcoded the gas limit instead of using the estimation. After that change, we were able to deploy the OP Mainnet!
+The last step was deploying the contracts to OP Mainnet: here we encounter a _problem_, MUD's deployment scripts were breaking when connecting to OP Mainnet. We found out that the issue was that the contracts were too big to estimate the _gas consumption_ using the rest endpoints, we "hack" the _node modules_ folder and hardcoded the _gas limit_ instead of using the estimation. After that change, we were able to deploy the OP Mainnet!
 
 With everything on OP Mainnet and little time in the clock before the hackathon ends. We move a little bit on the map, we set up our Bochamons, fight a duel and use the bridge to record the video.
 
-We realized that the costs of having that public are going to be high, so after the video was recorded we turned off the backend pointing to OP Mainnet and release a new version running on Localnet without the bridge active to have it public, so anybody can play the game.
+We realized that the costs of having that public are going to be high, so after the video was recorded we _turned off the backend_ pointing to OP Mainnet and release a new version _running on Localnet_ without the bridge active to have it public, so anybody can _play the game_.
 
 ## Dependencies
 
-We used open-source libs to build the game and read the state of the Blockchain:
+We used _open-source_ libs to build the game and read the state of the Blockchain:
 
 - All the solidity contracts are built using [MUD](https://github.com/latticexyz/mud).
 - Using [Garnet](https://github.com/bocha-io/garnet) we are able to index all the MUD transactions and it provides an in-memory database to access the information.
@@ -111,7 +111,7 @@ We wanted to implement more things but we run out of time:
 
 ## Assets
 
-### Bochamones
+### Bochamons
 
 - Tobishimi, Baobaffe, Firomenis, Crobarett design by PrincessPhoenix
 - Howliage,Mobiusk design by Magiscarf
