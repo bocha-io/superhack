@@ -1,4 +1,4 @@
-# Bochamon - ethglobal.com (superhack)
+# Bochamon
 
 _Fully on-chain turn-based_ game with multi-chain rewards. Bochamon is an _Autonomous World_ that can be deployed in any OP rollup and its rewards can be bridged between all the supported chains by _Layer-Zero_.
 
