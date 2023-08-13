@@ -359,7 +359,7 @@ func (g *GameAdmin) Subrutine() {
 		g.mu.Lock()
 		if g.PlayerA.Set && g.PlayerB.Set {
 			_ = g.ExecuteAction()
-		} else if time.Now().Add(-20*time.Second).Compare(g.TimeStart) == 1 {
+		} else if time.Now().Add(-65*time.Second).Compare(g.TimeStart) == 1 {
 			// The user didn't sent the action, assume surrender
 			if !g.PlayerA.Set {
 				g.PlayerA.ActionType = 2
