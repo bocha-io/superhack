@@ -5,7 +5,8 @@ using UnityEngine;
 public class OpenBochamon : MenuOptionAction
 {
     [SerializeField] BottomPanelController _battleUI;
-    public  override void Execute(){
-        _battleUI.ChangeState(PanelState.BochamonMenu);
+    public override void Execute(){
+        _battleUI.OpenBochamon();
+        // _battleUI.ChangeState(PanelState.BochamonMenu);
     }
 }

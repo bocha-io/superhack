@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 3
   moves:
   - {fileID: 7337399147077945923}
   - {fileID: 7337399146803059992}
   - {fileID: 1559197242906954872}
   - {fileID: 1728336238148660161}
   sprite: {fileID: 21300000, guid: 74caa74970242ed47940f0702ff277eb, type: 3}
+  greySprite: {fileID: 21300000, guid: 4b5093ac83434f54ca322db512f9566e, type: 3}
   bochaName: Baobaffe
   bochaType: 3
   maxHp: 500

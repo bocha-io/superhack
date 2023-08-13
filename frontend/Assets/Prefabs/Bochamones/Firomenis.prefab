@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 2
   moves:
   - {fileID: 4346335086799996385}
   - {fileID: 8399817397988179680}
   - {fileID: 4202543055538577222}
   - {fileID: 2668954099207376469}
   sprite: {fileID: 21300000, guid: 9251ab23fb96f5d45ae7445e1886803b, type: 3}
+  greySprite: {fileID: 21300000, guid: 88290563d7e5c814f9cd446edc48da07, type: 3}
   bochaName: Firomenis
   bochaType: 2
   maxHp: 300

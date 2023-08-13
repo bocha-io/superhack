@@ -9,7 +9,20 @@ public class OptionsController : MonoBehaviour
     public bool canGoBack;
     [SerializeField] BottomPanelController _parentPanel;
     
-    public void Setup(List<string> names){
+    public bool horizontal = true;
+    public int horizontalAugment = 1;
+    public int verticalAugment = 2;
+
+    public bool enable = true;
+
+    public virtual void Start(){
+       if (!horizontal) {
+            horizontalAugment = 2;
+            verticalAugment = 1;
+       }
+    }
+
+    public virtual void Setup(List<string> names){
         
     }
 
@@ -17,32 +30,34 @@ public class OptionsController : MonoBehaviour
         Select();
     }
 
-    public void GoBack(){
+    public virtual void GoBack(){
         if(canGoBack){
             _parentPanel.ChangeState(PanelState.PickingAction);
         }
     }
 
-    public void Update(){
+    public virtual void Update(){
+        if (!enable) return;
+
         previouslySelected = selected;
         if(Input.GetKeyDown(KeyCode.D)){
-            if (selected < options.Count - 1){
-                selected++;
+            if (selected < options.Count - horizontalAugment){
+                selected+=horizontalAugment;
             }                
         }
         if(Input.GetKeyDown(KeyCode.A)){
             if (selected > 0){
-                selected--;
+                selected-=horizontalAugment;
             }                
         }
         if(Input.GetKeyDown(KeyCode.S)){
-            if (selected < options.Count - 2){
-                selected+=2;
+            if (selected < options.Count - verticalAugment){
+                selected+=verticalAugment;
             }                
         }
         if(Input.GetKeyDown(KeyCode.W)){
-            if (selected > 1){
-                selected-=2;
+            if (selected > 0){
+                selected-=verticalAugment;
             }                
         }
         

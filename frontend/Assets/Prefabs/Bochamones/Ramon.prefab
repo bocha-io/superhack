@@ -48,12 +48,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b5a71c73875cb947a7ef20e7a19eb8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uuid: 
+  montype: 8
   moves:
   - {fileID: 1213754472582629747}
   - {fileID: 6987138135259144956}
   - {fileID: 7321326295532166484}
   - {fileID: 375470752297606604}
   sprite: {fileID: 21300000, guid: cb8d8944ab606ff4ab76ed0895aedb74, type: 3}
+  greySprite: {fileID: 21300000, guid: 3b8eb0e982c49154186fb21028ff5a71, type: 3}
   bochaName: Ramon
   bochaType: 1
   maxHp: 450
