@@ -47,31 +47,31 @@ public class ChainSelectController : OptionsController
 
     public override void Update(){
         previouslySelected = selected;
-        // if(Input.GetKeyDown(KeyCode.D)){
-        //     if (selected > 0){
-        //         selected-=horizontalAugment;
-        //     }                
-        // }
-        // if(Input.GetKeyDown(KeyCode.A)){
-        //     if (selected < options.Count - horizontalAugment){
-        //         selected+=horizontalAugment;
-        //     }                
-        // }
-        // if(Input.GetKeyDown(KeyCode.S)){
-        //     if (selected > 0){
-        //         selected-=verticalAugment;
-        //     }
-        // }
-        // if(Input.GetKeyDown(KeyCode.W)){
-        //     if (selected < options.Count - verticalAugment){
-        //         selected+=verticalAugment;
-        //     }
+        if(Input.GetKeyDown(KeyCode.D)){
+            if (selected > 0){
+                selected-=horizontalAugment;
+            }                
+        }
+        if(Input.GetKeyDown(KeyCode.A)){
+            if (selected < options.Count - horizontalAugment){
+                selected+=horizontalAugment;
+            }                
+        }
+        if(Input.GetKeyDown(KeyCode.S)){
+            if (selected > 0){
+                selected-=verticalAugment;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.W)){
+            if (selected < options.Count - verticalAugment){
+                selected+=verticalAugment;
+            }
 
-        // }
+        }
         
-        // if(Input.GetKeyDown(KeyCode.F)){
-        //     options[selected].Execute();
-        // }
+        if(Input.GetKeyDown(KeyCode.F)){
+            options[selected].Execute();
+        }
         if(Input.GetKeyDown(KeyCode.G)){
             if (canGoBack)
                 GoBack();
